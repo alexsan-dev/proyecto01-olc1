@@ -1,0 +1,51 @@
+/*
+    Created on : 18/08/2021, 15:12:47
+    Author     : alex
+*/
+
+.tab-pane>*.tab-header-area>*.tab-header-background{
+    -fx-background-color: #CFD8DC;
+    -fx-background-radius: 5 5 0 0;
+}
+
+.tab-pane>*.tab-header-area{
+    -fx-background-radius: 10;
+}
+
+.jfx-tab-pane *.tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.jfx-tab-pane *.headers-region *.tab-selected-line {
+    -fx-background-color: #03A9F4;
+}
+
+.jfx-tab-pane *.headers-region *.tab *.tab-container *.tab-label {
+    -fx-background-color: #546E7A;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.jfx-tab-pane *.headers-region *.tab:selected *.tab-container *.tab-label {
+    -fx-background-color: #263238;
+}
+
+.jfx-tab-pane *.headers-region *.tab *.tab-container *.tab-label {
+    -fx-font-size: 13px;
+
+}
+
+.text-area *.content {
+    -fx-background-color:#37474F;
+    -fx-background-radius: 0 10 10 10;
+    -fx-padding: 15;
+
+}
+
+.jfx-tab-pane *.headers-region>*.tab>*.jfx-rippler {
+    -jfx-rippler-fill: #fff;
+}
+
+.output-console *.content {
+    -fx-background-color:#263238;
+    -fx-background-radius:10;
+}

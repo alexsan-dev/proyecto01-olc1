@@ -12,11 +12,12 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../styles/primary.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="710.0" stylesheets="@../styles/primary.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <MenuBar prefHeight="29.0" prefWidth="718.0">
          <menus>
@@ -48,9 +49,9 @@
             </Menu>
          </menus>
       </MenuBar>
-      <HBox prefHeight="380.0" prefWidth="600.0">
+      <HBox prefHeight="371.0" prefWidth="655.0">
          <children>
-            <VBox prefHeight="371.0" prefWidth="352.0">
+            <VBox prefHeight="371.0" prefWidth="355.0">
                <children>
                   <HBox prefHeight="95.0" prefWidth="312.0" spacing="10.0">
                      <children>
@@ -61,7 +62,7 @@
                         </ImageView>
                         <VBox prefHeight="56.0" prefWidth="278.0">
                            <children>
-                              <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Editores de codigo." wrappingWidth="255.7294921875">
+                              <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Editores de codigo" wrappingWidth="255.7294921875">
                                  <font>
                                     <Font name="Montserrat Bold" size="17.0" />
                                  </font>
@@ -110,6 +111,46 @@
                   <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </padding>
             </VBox>
+            <HBox>
+               <children>
+                  <Line endX="-76.24269104003906" endY="1508.1077880859375" opacity="0.39" startX="-76.24269104003906" startY="1138.81494140625" />
+                  <VBox prefHeight="371.0" prefWidth="355.0">
+                     <children>
+                        <HBox prefHeight="56.0" prefWidth="312.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="67.0" fitWidth="42.0" opacity="0.8" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../assets/icons-console.png" />
+                                 </image>
+                              </ImageView>
+                              <VBox prefHeight="56.0" prefWidth="278.0">
+                                 <children>
+                                    <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Consola de salida" wrappingWidth="255.7294921875">
+                                       <font>
+                                          <Font name="Montserrat Bold" size="17.0" />
+                                       </font>
+                                    </Text>
+                                    <Text opacity="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="Aqui se mostrara el resultado." wrappingWidth="255.7294921875">
+                                       <font>
+                                          <Font name="Montserrat Regular" size="14.0" />
+                                       </font>
+                                    </Text>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <TextArea maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="271.0" prefWidth="315.0" promptText="Texto de salida y errores." style="-fx-text-fill: #fff;" styleClass="output-console">
+                           <font>
+                              <Font name="Fira Code SemiBold" size="13.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </HBox>
          </children>
       </HBox>
    </children>
