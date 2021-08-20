@@ -31,7 +31,7 @@
 
 .jfx-tab-pane *.headers-region *.tab *.tab-container *.tab-label {
     -fx-font-size: 13px;
-
+    -fx-font-family: "Montserrat";
 }
 
 .text-area *.content {
