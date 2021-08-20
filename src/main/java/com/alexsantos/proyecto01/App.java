@@ -1,12 +1,11 @@
 package com.alexsantos.proyecto01;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /**
  * JavaFX App
@@ -21,7 +20,7 @@ public class App extends Application {
         stage.setScene(scene);
         stage.show();
     }
-    
+
     // CAMBIAR DE VISTAS
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
@@ -29,7 +28,7 @@ public class App extends Application {
 
     // CARGAR VISTA
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/" + fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
