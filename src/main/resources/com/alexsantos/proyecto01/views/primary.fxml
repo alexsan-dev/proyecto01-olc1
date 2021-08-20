@@ -1,21 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
+<?import com.jfoenix.controls.JFXTabPane?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<VBox
-    spacing="20.0"
-    alignment="CENTER"
-    xmlns:fx="http://javafx.com/fxml/1"
-    xmlns="http://javafx.com/javafx/8.0.171"
-    fx:controller="com.alexsantos.proyecto01.controllers.Primary">
-    <children>
-        <Label text="Primary View" />
-    </children>
-    <padding>
-        <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../styles/primary.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar prefHeight="29.0" prefWidth="718.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="Archivos">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+                  <MenuItem mnemonicParsing="false" text="Guardar" />
+                  <MenuItem mnemonicParsing="false" text="Guardar como" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Editor">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Cerrar pestaña" />
+                  <MenuItem mnemonicParsing="false" text="Abrir pestaña" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Herramientas">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Ejecutar" />
+                  <MenuItem mnemonicParsing="false" text="Consola" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Reportes">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Errores" />
+                  <MenuItem mnemonicParsing="false" text="Estadistico" />
+                  <MenuItem mnemonicParsing="false" text="JSON" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <HBox prefHeight="380.0" prefWidth="600.0">
+         <children>
+            <VBox prefHeight="371.0" prefWidth="352.0">
+               <children>
+                  <HBox prefHeight="95.0" prefWidth="312.0" spacing="10.0">
+                     <children>
+                        <ImageView fitHeight="67.0" fitWidth="42.0" opacity="0.8" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/icons-code.png" />
+                           </image>
+                        </ImageView>
+                        <VBox prefHeight="56.0" prefWidth="278.0">
+                           <children>
+                              <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Editores de codigo." wrappingWidth="255.7294921875">
+                                 <font>
+                                    <Font name="Montserrat Bold" size="17.0" />
+                                 </font>
+                              </Text>
+                              <Text opacity="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="Escribe el codigo a ser interpretado." wrappingWidth="255.7294921875">
+                                 <font>
+                                    <Font name="Montserrat Regular" size="14.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <JFXTabPane maxHeight="1.7976931348623157E308" prefHeight="315.0" prefWidth="312.0">
+                     <tabs>
+                        <Tab text="Codigo01">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="219.0" prefWidth="352.0">
+                                 <children>
+                                    <TextArea maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="245.0" prefWidth="312.0" promptText="Escribe tu codigo aqui." style="-fx-text-fill: #fff;">
+                                       <font>
+                                          <Font name="Fira Code SemiBold" size="13.0" />
+                                       </font>
+                                    </TextArea>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                        <Tab text="Codigo02">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="219.0" prefWidth="352.0">
+                                 <children>
+                                    <TextArea maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="245.0" prefWidth="312.0" promptText="Escribe tu codigo aqui." style="-fx-text-fill: #fff;">
+                                       <font>
+                                          <Font name="Fira Code SemiBold" size="13.0" />
+                                       </font>
+                                    </TextArea>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
+                     </tabs>
+                  </JFXTabPane>
+               </children>
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
 </VBox>
