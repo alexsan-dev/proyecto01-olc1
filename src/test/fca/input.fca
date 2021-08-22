@@ -3,3 +3,12 @@
 es un
 comentario multilinea
 *#
+
+GenerarReporteEstadistico {
+    DefinirGlobales {
+        string var1 = "Mi variable";
+        double var2 = 22.24;
+    }
+
+    compare("Su mecha", "su makina");
+}
