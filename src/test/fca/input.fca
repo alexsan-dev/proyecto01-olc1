@@ -10,5 +10,7 @@ GenerarReporteEstadistico {
         double var2 = 22.24;
     }
 
+    GraficaBarras {}
+
     compare("Su mecha", "su makina");
 }
