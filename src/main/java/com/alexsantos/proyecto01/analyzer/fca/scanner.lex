@@ -52,6 +52,10 @@ MULTICOMMENT=(#\*[^\*]*\*#)
 
 "titulo" {return new Symbol(sym.title,yycolumn,yyline,yytext());}
 "ejex" {return new Symbol(sym.xaxis,yycolumn,yyline,yytext());}
+"valores" {return new Symbol(sym.values,yycolumn,yyline,yytext());}
+
+"titulox" {return new Symbol(sym.bgtitlex,yycolumn,yyline,yytext());}
+"tituloy" {return new Symbol(sym.bgtitley,yycolumn,yyline,yytext());}
 
 "string" {return new Symbol(sym.strtype,yycolumn,yyline,yytext());}
 "double" {return new Symbol(sym.doubletype,yycolumn,yyline,yytext());}

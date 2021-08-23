@@ -27,7 +27,8 @@ not,plus,less,div,times,openbracket,closebracket,
 semicolom,openparenthesis,closeparenthesis, colom,
 opensquarebracket, closesquarebracket;
 
-terminal title, xaxis;
+terminal title, xaxis, values;
+terminal bgtitlex, bgtitley;
 
 non terminal START, MAIN,
 COMPARE, SETGLOBALS, DECLARATIONS,
@@ -35,11 +36,17 @@ DECLARATION, FUNCTIONS, FUNCTION,
 BARGRAPH;
 
 non terminal ArrayList<String> STRINGLIST;
+non terminal ArrayList<Double> DOUBLELIST;
+
+non terminal BarGraph BARGRAPHPROPS;
+non terminal Object[] BARGRAPHPROP;
+non terminal String BARGRAPHPTITLEX;
+non terminal String BARGRAPHPTITLEY;
 
 non terminal String GRAPHTITLE;
 non terminal Object[] GRAPHPROP;
-non terminal BarGraph BARGRAPHPROPS;
 non terminal ArrayList<String> GRAPHXAXIS;
+non terminal ArrayList<Double> GRAPHVALUES;
 
 precedence left major,minor,equals;
 precedence right not;
@@ -78,9 +85,30 @@ id:text4 {:
     RESULT.add((String) reports.getGlobalProp(text4));
 :};
 
+DOUBLELIST ::= DOUBLELIST:list comma decimal:text1 {:
+    RESULT = list;
+    RESULT.add(Double.parseDouble(text1));
+:} |
+DOUBLELIST:list comma id:text2 {:
+    RESULT = list;
+    Reports reports = Reports.getInstance();
+    RESULT.add((Double) reports.getGlobalProp(text2));
+:} |
+decimal:text3 {:
+    ArrayList<Double> newList = new ArrayList<Double>();
+    RESULT = newList;
+    RESULT.add(Double.parseDouble(text3));
+:} |
+id:text4 {:
+    Reports reports = Reports.getInstance();
+    ArrayList<Double> newList = new ArrayList<Double>();
+    RESULT = newList;
+    RESULT.add((Double) reports.getGlobalProp(text4));
+:};
+
 COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2 closeparenthesis {:
     Reports reports = Reports.getInstance();
-    reports.setComparePaths(path1, path2, idright, idleft);
+    reports.setComparePaths(path1, path2, idright);
 :};
 
 SETGLOBALS ::= setglobals openbracket DECLARATIONS closebracket {: :};
@@ -98,10 +126,9 @@ DECLARATION ::= strtype id:idstr equals strtext:res {:
 BARGRAPH ::= bargraph openbracket BARGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.graphs.add(graph);
-    System.out.println(graph.title);
 :};
 
-BARGRAPHPROPS ::= BARGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
+BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:
     RESULT = graph;
     RESULT.setProp(prop);
 :} | GRAPHPROP:prop semicolom {:
@@ -110,10 +137,20 @@ BARGRAPHPROPS ::= BARGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
     RESULT.setProp(prop);
 :};
 
+BARGRAPHPROP ::= GRAPHPROP:prop {:
+    RESULT = prop;
+:} | BARGRAPHPTITLEX:propx {:
+    RESULT = new Object[] {propx, "xaxisTitle", propxright};
+:} | BARGRAPHPTITLEY:propy {:
+    RESULT = new Object[] {propy, "yaxisTitle", propyright};
+:};
+
 GRAPHPROP ::= GRAPHTITLE:title {:
-    RESULT = new Object[] {title, "title"};
+    RESULT = new Object[] {title, "title", titleright};
 :} | GRAPHXAXIS:list {:
-    RESULT = new Object[] {list, "xaxis"};
+    RESULT = new Object[] {list, "xaxis", listright};
+:} | GRAPHVALUES:list {:
+    RESULT = new Object[] {list, "values", listright};
 :};
 
 GRAPHTITLE ::= title colom strtext:text {:
@@ -125,4 +162,22 @@ GRAPHTITLE ::= title colom strtext:text {:
 
 GRAPHXAXIS ::= xaxis colom opensquarebracket STRINGLIST:list closesquarebracket {:
     RESULT = list;
+:};
+
+GRAPHVALUES ::= values colom opensquarebracket DOUBLELIST:list closesquarebracket {:
+    RESULT = list;
+:};
+
+BARGRAPHPTITLEX ::= bgtitlex colom strtext:text {:
+    RESULT = text;
+:} | bgtitlex colom id:tId {:
+    Reports reports = Reports.getInstance();
+    RESULT = (String) reports.getGlobalProp(tId);
+:};
+
+BARGRAPHPTITLEY ::= bgtitley colom strtext:text {:
+    RESULT = text;
+:} | bgtitley colom id:tId {:
+    Reports reports = Reports.getInstance();
+    RESULT = (String) reports.getGlobalProp(tId);
 :};

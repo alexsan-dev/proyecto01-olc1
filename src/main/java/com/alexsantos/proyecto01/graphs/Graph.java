@@ -25,11 +25,23 @@ public class Graph {
 
         // ASIGNAR
         if (key.equals("title")) {
-            title = (String) prop[0];
+            if (!title.isEmpty()) {
+                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo.");
+            } else {
+                title = (String) prop[0];
+            }
         } else if (key.equals("xaxis")) {
-            xaxis = (ArrayList<String>) prop[0];
+            if (xaxis.size() == 0) {
+                xaxis = (ArrayList<String>) prop[0];
+            } else {
+                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el eje X.");
+            }
         } else if (key.equals("values")) {
-            values = (ArrayList<String>) prop[0];
+            if (values.size() == 0) {
+                values = (ArrayList<String>) prop[0];
+            } else {
+                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez los valores.");
+            }
         }
     }
 }

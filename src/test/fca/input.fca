@@ -7,17 +7,18 @@ comentario multilinea
 GenerarReporteEstadistico {
     DefinirGlobales {
         string title = "Mi grafica";
+        String ejex01 = "Texto01";
+        string titlex = "Titulo X";
     }
 
     GraficaBarras {
         titulo: title;
-        ejex: ["Texto01","Texto02","Texto03","Texto04"];
+        ejex: [ejex01,"Texto02","Texto03","Texto04"];
+        valores: [23.2, 53.2, 53.2, 2.34];
+        titulox: titlex;
+        tituloy: "Titulo eje Y";
     }
 
-    GraficaBarras {
-        titulo: "titulo2";
-        ejex: ["Texto01","Texto02","Texto03","Texto04"];
-    }
 
     compare("Su mecha", "su makina");
 }

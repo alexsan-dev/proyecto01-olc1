@@ -31,7 +31,7 @@ public class Reports {
         return reports;
     }
 
-    public static void setComparePaths(String pathA, String pathB, int line, int col) {
+    public static void setComparePaths(String pathA, String pathB, int line) {
         if (path1.equals("") && path2.equals("")) {
             path1 = pathA;
             path2 = pathB;
