@@ -6,11 +6,18 @@ comentario multilinea
 
 GenerarReporteEstadistico {
     DefinirGlobales {
-        string var1 = "Mi variable";
-        double var2 = 22.24;
+        string title = "Mi grafica";
     }
 
-    GraficaBarras {}
+    GraficaBarras {
+        titulo: title;
+        ejex: ["Texto01","Texto02","Texto03","Texto04"];
+    }
+
+    GraficaBarras {
+        titulo: "titulo2";
+        ejex: ["Texto01","Texto02","Texto03","Texto04"];
+    }
 
     compare("Su mecha", "su makina");
 }

@@ -34,17 +34,24 @@ MULTICOMMENT=(#\*[^\*]*\*#)
 "<" {return new Symbol(sym.minor,yycolumn,yyline,yytext());}
 "," {return new Symbol(sym.comma,yycolumn,yyline,yytext());}
 ">" {return new Symbol(sym.major,yycolumn,yyline,yytext());}
+":" {return new Symbol(sym.colom,yycolumn,yyline,yytext());}
 "=" {return new Symbol(sym.equals,yycolumn,yyline,yytext());}
 ";" {return new Symbol(sym.semicolom,yycolumn,yyline,yytext());}
 "{" {return new Symbol(sym.openbracket,yycolumn,yyline,yytext());}
 "}" {return new Symbol(sym.closebracket,yycolumn,yyline,yytext());}
 "(" {return new Symbol(sym.openparenthesis,yycolumn,yyline,yytext());}
 ")" {return new Symbol(sym.closeparenthesis,yycolumn,yyline,yytext());}
+"[" {return new Symbol(sym.opensquarebracket,yycolumn,yyline,yytext());}
+"]" {return new Symbol(sym.closesquarebracket,yycolumn,yyline,yytext());}
+
 
 "generarreporteestadistico" {return new Symbol(sym.main,yycolumn,yyline,yytext());}
 "definirglobales" {return new Symbol(sym.setglobals,yycolumn,yyline,yytext());}
 "graficabarras" {return new Symbol(sym.bargraph,yycolumn,yyline,yytext());}
 "compare" {return new Symbol(sym.compare,yycolumn,yyline,yytext());}
+
+"titulo" {return new Symbol(sym.title,yycolumn,yyline,yytext());}
+"ejex" {return new Symbol(sym.xaxis,yycolumn,yyline,yytext());}
 
 "string" {return new Symbol(sym.strtype,yycolumn,yyline,yytext());}
 "double" {return new Symbol(sym.doubletype,yycolumn,yyline,yytext());}

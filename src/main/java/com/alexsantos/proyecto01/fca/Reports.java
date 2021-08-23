@@ -1,5 +1,7 @@
 package com.alexsantos.proyecto01.fca;
 
+import com.alexsantos.proyecto01.graphs.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -11,24 +13,26 @@ public class Reports {
     // GLOBALES
     public static Reports reports;
     public static String path1, path2;
+    public static ArrayList<Graph> graphs;
     public static HashMap<String, Object> properties;
 
-    // INSTANCIA
+    private static void cleanProps() {
+        properties = new HashMap<String, Object>();
+        graphs = new ArrayList<Graph>();
+        reports = new Reports();
+        path1 = "";
+        path2 = "";
+    }
+
     public static Reports getInstance() {
         if (reports == null) {
-            properties = new HashMap<String, Object>();
-            reports = new Reports();
-            path1 = "";
-            path2 = "";
+            cleanProps();
         }
-
         return reports;
     }
 
-    // ASIGNAR RUTAS DE COMPARACION
     public static void setComparePaths(String pathA, String pathB, int line, int col) {
         if (path1.equals("") && path2.equals("")) {
-            properties = new HashMap<String, Object>();
             path1 = pathA;
             path2 = pathB;
         } else {
@@ -36,12 +40,10 @@ public class Reports {
         }
     }
 
-    // ASIGNAR VARIABLES GLOBALES
     public static void setGlobalProp(String key, Object value) {
         properties.put(key, value);
     }
 
-    // OBTENER VARIABLES GLOBALES
     public static Object getGlobalProp(String key) {
         return properties.getOrDefault(key, null);
     }
