@@ -1,6 +1,7 @@
 package com.alexsantos.proyecto01.fca;
 
 import com.alexsantos.proyecto01.graphs.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,5 +47,19 @@ public class Reports {
 
     public static Object getGlobalProp(String key) {
         return properties.getOrDefault(key, null);
+    }
+
+    public static void generateGraphs() {
+        // CREAR CARPETA SI NO EXISTE
+        String path = "./report/assets/";
+        File projectDir = new File(path);
+        if (!projectDir.exists()) {
+            projectDir.mkdirs();
+        }
+
+        // GRAFICAR
+        for (int i = 0; i < graphs.size(); i++) {
+            graphs.get(i).generateGraph(path);
+        }
     }
 }

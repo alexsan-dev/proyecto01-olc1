@@ -55,7 +55,10 @@ precedence left times,div;
 
 start with START;
 
-START ::= MAIN {: :};
+START ::= MAIN {:
+    Reports reports = Reports.getInstance();
+    reports.generateGraphs();
+:};
 
 MAIN ::= main openbracket FUNCTIONS closebracket {: :};
 
@@ -108,7 +111,7 @@ id:text4 {:
 
 COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2 closeparenthesis {:
     Reports reports = Reports.getInstance();
-    reports.setComparePaths(path1, path2, idright);
+    reports.setComparePaths(path1.substring(1, path1.length() - 1), path2.substring(1, path2.length() - 1), idright);
 :};
 
 SETGLOBALS ::= setglobals openbracket DECLARATIONS closebracket {: :};

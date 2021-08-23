@@ -8,7 +8,7 @@ GenerarReporteEstadistico {
     DefinirGlobales {
         string title = "Mi grafica";
         String ejex01 = "Texto01";
-        string titlex = "Titulo X";
+        string titlex = "Titulo eje X";
     }
 
     GraficaBarras {
@@ -18,7 +18,6 @@ GenerarReporteEstadistico {
         titulox: titlex;
         tituloy: "Titulo eje Y";
     }
-
 
     compare("Su mecha", "su makina");
 }

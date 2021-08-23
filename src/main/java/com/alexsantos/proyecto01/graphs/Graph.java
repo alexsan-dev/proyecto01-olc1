@@ -11,12 +11,16 @@ public class Graph {
     // GLOBALES
     public String title;
     public ArrayList<String> xaxis;
-    public ArrayList<String> values;
+    public ArrayList<Double> values;
 
     public Graph() {
         title = "";
         xaxis = new ArrayList<>();
         values = new ArrayList<>();
+    }
+
+    public void generateGraph(String name) {
+
     }
 
     public void setProp(Object[] prop) {
@@ -38,7 +42,7 @@ public class Graph {
             }
         } else if (key.equals("values")) {
             if (values.size() == 0) {
-                values = (ArrayList<String>) prop[0];
+                values = (ArrayList<Double>) prop[0];
             } else {
                 System.out.println("Error en linea " + prop[2] + " ya se asigno una vez los valores.");
             }
