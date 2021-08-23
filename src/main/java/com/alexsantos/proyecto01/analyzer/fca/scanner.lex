@@ -44,10 +44,10 @@ MULTICOMMENT=(#\*[^\*]*\*#)
 "[" {return new Symbol(sym.opensquarebracket,yycolumn,yyline,yytext());}
 "]" {return new Symbol(sym.closesquarebracket,yycolumn,yyline,yytext());}
 
-
 "generarreporteestadistico" {return new Symbol(sym.main,yycolumn,yyline,yytext());}
 "definirglobales" {return new Symbol(sym.setglobals,yycolumn,yyline,yytext());}
 "graficabarras" {return new Symbol(sym.bargraph,yycolumn,yyline,yytext());}
+"graficapie" {return new Symbol(sym.piegraph,yycolumn,yyline,yytext());}
 "compare" {return new Symbol(sym.compare,yycolumn,yyline,yytext());}
 
 "titulo" {return new Symbol(sym.title,yycolumn,yyline,yytext());}

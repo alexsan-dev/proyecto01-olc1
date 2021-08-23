@@ -19,7 +19,7 @@ parser code {:
     }
 :}
 
-terminal main,compare,setglobals,bargraph;
+terminal main,compare,setglobals,bargraph,piegraph;
 terminal strtype,doubletype;
 terminal String number,decimal,strtext,id;
 terminal sharp,comma,major,minor,equals,
@@ -33,7 +33,7 @@ terminal bgtitlex, bgtitley;
 non terminal START, MAIN,
 COMPARE, SETGLOBALS, DECLARATIONS,
 DECLARATION, FUNCTIONS, FUNCTION,
-BARGRAPH;
+BARGRAPH, PIEGRAPH;
 
 non terminal ArrayList<String> STRINGLIST;
 non terminal ArrayList<Double> DOUBLELIST;
@@ -42,6 +42,8 @@ non terminal BarGraph BARGRAPHPROPS;
 non terminal Object[] BARGRAPHPROP;
 non terminal String BARGRAPHPTITLEX;
 non terminal String BARGRAPHPTITLEY;
+
+non terminal PieGraph PIEGRAPHPROPS;
 
 non terminal String GRAPHTITLE;
 non terminal Object[] GRAPHPROP;
@@ -65,7 +67,7 @@ MAIN ::= main openbracket FUNCTIONS closebracket {: :};
 FUNCTIONS ::= FUNCTION FUNCTIONS | FUNCTION |
 SETGLOBALS | SETGLOBALS FUNCTIONS {: :};
 
-FUNCTION ::= BARGRAPH | COMPARE semicolom {: :};
+FUNCTION ::= BARGRAPH | PIEGRAPH | COMPARE semicolom {: :};
 
 STRINGLIST ::= STRINGLIST:list comma strtext:text1 {:
     RESULT = list;
@@ -126,6 +128,20 @@ DECLARATION ::= strtype id:idstr equals strtext:res {:
     reports.setGlobalProp(idbd, Double.parseDouble(dbres));
 :};
 
+PIEGRAPH ::= piegraph openbracket PIEGRAPHPROPS:graph closebracket {:
+    Reports reports = Reports.getInstance();
+    reports.graphs.add(graph);
+:};
+
+PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
+    RESULT = graph;
+    RESULT.setProp(prop);
+:} | GRAPHPROP:prop semicolom {:
+    PieGraph pieGraph = new PieGraph();
+    RESULT = pieGraph;
+    RESULT.setProp(prop);
+:};
+
 BARGRAPH ::= bargraph openbracket BARGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.graphs.add(graph);
@@ -134,7 +150,7 @@ BARGRAPH ::= bargraph openbracket BARGRAPHPROPS:graph closebracket {:
 BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:
     RESULT = graph;
     RESULT.setProp(prop);
-:} | GRAPHPROP:prop semicolom {:
+:} | BARGRAPHPROP:prop semicolom {:
     BarGraph barGraph = new BarGraph();
     RESULT = barGraph;
     RESULT.setProp(prop);

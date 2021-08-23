@@ -74,7 +74,7 @@ public class BarGraph extends Graph {
         // GUARDAR IMAGEN
         try {
             File file = new File(path + "barchart_" + title + ".jpeg");
-            ChartUtils.saveChartAsJPEG(file, chart, 300, 300);
+            ChartUtils.saveChartAsJPEG(file, chart, 600, 400);
         } catch (Exception ex) {
             System.out.println(ex);
         }
