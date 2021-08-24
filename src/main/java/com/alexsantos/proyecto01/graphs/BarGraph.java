@@ -1,6 +1,7 @@
 package com.alexsantos.proyecto01.graphs;
 
 import java.io.File;
+import java.io.IOException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -22,26 +23,31 @@ public class BarGraph extends Graph {
         yaxisTitle = "";
     }
 
+    @Override
     public void setProp(Object[] prop) {
-        // ENVIAR OTRAS PROPIEDADES
-        super.setProp(prop);
+        if (prop[0] != null) {
+            // ENVIAR OTRAS PROPIEDADES
+            super.setProp(prop);
 
-        // NOMBRE DE LA PROPIEDAD
-        String key = (String) prop[1];
+            // NOMBRE DE LA PROPIEDAD
+            String key = (String) prop[1];
 
-        // ASIGNAR
-        if (key.equals("xaxisTitle")) {
-            if (!xaxisTitle.isEmpty()) {
-                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje X.");
-            } else {
-                xaxisTitle = (String) prop[0];
+            // ASIGNAR
+            if (key.equals("xaxisTitle")) {
+                if (xaxisTitle.isEmpty()) {
+                    xaxisTitle = (String) prop[0];
+                } else {
+                    System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje X.");
+                }
+            } else if (key.equals("yaxisTitle")) {
+                if (yaxisTitle.isEmpty()) {
+                    yaxisTitle = (String) prop[0];
+                } else {
+                    System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje Y.");
+                }
             }
-        } else if (key.equals("yaxisTitle")) {
-            if (!yaxisTitle.isEmpty()) {
-                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje Y.");
-            } else {
-                yaxisTitle = (String) prop[0];
-            }
+        } else {
+            System.out.println("Error valor nulo en linea " + prop[2]);
         }
     }
 
@@ -49,8 +55,12 @@ public class BarGraph extends Graph {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // AGREGAR DATOS
-        for (int i = 0; i < values.size(); i++) {
-            dataset.addValue(values.get(i), xaxis.get(i), "");
+        if (xaxis.size() >= values.size()) {
+            for (int i = 0; i < values.size(); i++) {
+                dataset.addValue(values.get(i), xaxis.get(i), "");
+            }
+        } else {
+            System.out.println("Error faltan valores en el eje X en grafica de barras " + title);
         }
 
         return dataset;
@@ -75,7 +85,7 @@ public class BarGraph extends Graph {
         try {
             File file = new File(path + "barchart_" + title + ".jpeg");
             ChartUtils.saveChartAsJPEG(file, chart, 600, 400);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println(ex);
         }
     }

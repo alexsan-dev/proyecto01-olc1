@@ -24,28 +24,38 @@ public class Graph {
     }
 
     public void setProp(Object[] prop) {
-        // NOMBRE DE LA PROPIEDAD
-        String key = (String) prop[1];
+        if (prop[0] != null) {
+            // NOMBRE DE LA PROPIEDAD
+            String key = (String) prop[1];
 
-        // ASIGNAR
-        if (key.equals("title")) {
-            if (!title.isEmpty()) {
-                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo.");
-            } else {
-                title = (String) prop[0];
+            // ASIGNAR
+            switch (key) {
+                case "title":
+                    if (title.isEmpty()) {
+                        title = (String) prop[0];
+                    } else {
+                        System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo.");
+                    }
+                    break;
+                case "xaxis":
+                    if (xaxis.isEmpty()) {
+                        xaxis = (ArrayList<String>) prop[0];
+                    } else {
+                        System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el eje X.");
+                    }
+                    break;
+                case "values":
+                    if (values.isEmpty()) {
+                        values = (ArrayList<Double>) prop[0];
+                    } else {
+                        System.out.println("Error en linea " + prop[2] + " ya se asigno una vez los valores.");
+                    }
+                    break;
+                default:
+                    break;
             }
-        } else if (key.equals("xaxis")) {
-            if (xaxis.size() == 0) {
-                xaxis = (ArrayList<String>) prop[0];
-            } else {
-                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el eje X.");
-            }
-        } else if (key.equals("values")) {
-            if (values.size() == 0) {
-                values = (ArrayList<Double>) prop[0];
-            } else {
-                System.out.println("Error en linea " + prop[2] + " ya se asigno una vez los valores.");
-            }
+        } else {
+            System.out.println("Error valor nulo en linea " + prop[2]);
         }
     }
 }

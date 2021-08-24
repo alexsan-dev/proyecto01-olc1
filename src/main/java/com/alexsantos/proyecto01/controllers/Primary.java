@@ -2,6 +2,7 @@ package com.alexsantos.proyecto01.controllers;
 
 import com.alexsantos.proyecto01.analyzer.fca.FCAParser;
 import com.alexsantos.proyecto01.analyzer.fca.FCAScanner;
+import com.alexsantos.proyecto01.fca.Reports;
 import com.jfoenix.controls.JFXTabPane;
 import java.io.*;
 import javafx.fxml.FXML;
@@ -159,10 +160,13 @@ public class Primary {
 
     @FXML
     private void compile() {
+        Reports reports = Reports.getInstance();
+        reports.cleanProps();
+
         Tab currentTab = tabs.getTabs().get(selectedEditor);
         AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
         TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
-        output.setText("");
+        clear();
 
         try {
             FCAParser parser = new FCAParser(new FCAScanner(new StringReader(textArea.getText())));

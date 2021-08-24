@@ -9,14 +9,14 @@ import com.alexsantos.proyecto01.fca.Reports;
 /* ERRORES */
 parser code {:
     public void syntax_error(Symbol s){
-        System.out.println("Error Sintáctico en la Línea " + s.right +
-        " Columna " + s.left + ". Componente: " + s.value + ".");
+        System.out.println("Error sintactico en la linea " + s.left +
+        " Columna " + s.right + ". Componente: " + s.value + ".");
 
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-        System.out.println("Error síntactico irrecuperable en la Línea " +
-        s.right + " Columna " + s.left + ". Componente: " + s.value +
+        System.out.println("Error sintactico irrecuperable en la linea " +
+        s.left + " Columna " + s.right + ". Componente: " + s.value +
         " no reconocido.");
     }
 :}
@@ -63,6 +63,7 @@ non terminal String BARGRAPHPTITLEY;
 
 /* NO TERMINALES DE GRAFICA DE PIE */
 non terminal PieGraph PIEGRAPHPROPS;
+non terminal Object[] PIEGRAPHPROP;
 
 /* NO TERMINALES DE GRAFICA DE LINEA */
 non terminal LineGraph LINEGRAPHPROPS;
@@ -71,6 +72,7 @@ non terminal String LINEGRAPHFILE;
 
 start with START;
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* PRODUCCIONES GENERICAS DE STRINGS */
 STRINGLIST ::= STRINGLIST:list comma strtext:text {:
     RESULT = list;
@@ -79,7 +81,8 @@ STRINGLIST ::= STRINGLIST:list comma strtext:text {:
 STRINGLIST:list comma id:text {:
     RESULT = list;
     Reports reports = Reports.getInstance();
-    RESULT.add((String) reports.getGlobalProp(text));
+    if(reports.getGlobalProp(text) != null)
+        RESULT.add((String) reports.getGlobalProp(text));
 :} |
 strtext:text {:
     ArrayList<String> newList = new ArrayList<String>();
@@ -90,9 +93,11 @@ id:text {:
     Reports reports = Reports.getInstance();
     ArrayList<String> newList = new ArrayList<String>();
     RESULT = newList;
-    RESULT.add((String) reports.getGlobalProp(text));
+    if(reports.getGlobalProp(text) != null)
+        RESULT.add((String) reports.getGlobalProp(text));
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* PRODUCCIONES GENERICAS DE DOUBLES */
 DOUBLELIST ::= DOUBLELIST:list comma decimal:text {:
     RESULT = list;
@@ -101,7 +106,8 @@ DOUBLELIST ::= DOUBLELIST:list comma decimal:text {:
 DOUBLELIST:list comma id:text {:
     RESULT = list;
     Reports reports = Reports.getInstance();
-    RESULT.add((Double) reports.getGlobalProp(text));
+    if(reports.getGlobalProp(text) != null)
+        RESULT.add((Double) reports.getGlobalProp(text));
 :} |
 decimal:text {:
     ArrayList<Double> newList = new ArrayList<Double>();
@@ -112,77 +118,87 @@ id:text {:
     Reports reports = Reports.getInstance();
     ArrayList<Double> newList = new ArrayList<Double>();
     RESULT = newList;
-    RESULT.add((Double) reports.getGlobalProp(text));
+    if(reports.getGlobalProp(text) != null)
+        RESULT.add((Double) reports.getGlobalProp(text));
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* INICIO */
 START ::= MAIN {:
     Reports reports = Reports.getInstance();
-    System.out.println("Generando todas las graficas");
     reports.generateGraphs();
-    System.out.println("Fin de analisis lexico");
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* DECLARACION INICIAL */
 MAIN ::= main openbracket FUNCTIONS closebracket {: :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* LISTA DE FUNCIONES VALIDAS */
-FUNCTIONS ::= FUNCTION FUNCTIONS | FUNCTION |
-SETGLOBALS | SETGLOBALS FUNCTIONS {: :};
+FUNCTIONS ::= FUNCTION FUNCTIONS | FUNCTION
+| SETGLOBALS | SETGLOBALS FUNCTIONS {: :};
 
-FUNCTION ::= BARGRAPH | PIEGRAPH | LINEGRAPH | COMPARE semicolom {: :};
+FUNCTION ::= BARGRAPH | PIEGRAPH | LINEGRAPH | COMPARE
+| error openbracket | error closebracket {: :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* FUNCION COMPARE */
-COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2 closeparenthesis {:
+COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2
+closeparenthesis semicolom {:
     Reports reports = Reports.getInstance();
-    reports.setComparePaths(Tools.trimStr(path1), Tools.trimStr(path2), idright);
-    System.out.println("Comparando proyectos " + Tools.trimStr(path1) + " y " + Tools.trimStr(path2));
-:};
+    reports.setComparePaths(Tools.trimStr(path1), Tools.trimStr(path2), idleft);
+:} | error openparenthesis {: :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* DECALARAR GLOBALES */
 SETGLOBALS ::= setglobals openbracket DECLARATIONS closebracket {: :};
 
-DECLARATIONS ::= DECLARATIONS DECLARATION semicolom | DECLARATION semicolom {: :};
+DECLARATIONS ::= DECLARATIONS DECLARATION semicolom
+| DECLARATION semicolom | error semicolom {: :};
 
 DECLARATION ::= strtype id:idstr equals strtext:text {:
     Reports reports = Reports.getInstance();
     reports.setGlobalProp(idstr, Tools.trimStr(text));
-    System.out.println("Declarando variable " + idstr);
 :} | doubletype id:idstr equals decimal:text {:
     Reports reports = Reports.getInstance();
     reports.setGlobalProp(idstr, Double.parseDouble(text));
-    System.out.println("Declarando variable " + idstr);
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* PRODUCCIONES DE GRAFICAS EN GENERAL */
 GRAPHPROP ::= GRAPHTITLE:title {:
-    RESULT = new Object[] {title, "title", titleright};
+    RESULT = new Object[] {title, "title", titleleft};
 :} | GRAPHXAXIS:list {:
-    RESULT = new Object[] {list, "xaxis", listright};
+    RESULT = new Object[] {list, "xaxis", listleft};
 :} | GRAPHVALUES:list {:
-    RESULT = new Object[] {list, "values", listright};
+    RESULT = new Object[] {list, "values", listleft};
 :};
 
 GRAPHTITLE ::= title colom strtext:text {:
     RESULT = Tools.trimStr(text);
 :} | title colom id:tId {:
     Reports reports = Reports.getInstance();
-    RESULT = (String) reports.getGlobalProp(tId);
+    if(reports.getGlobalProp(tId) != null)
+        RESULT = (String) reports.getGlobalProp(tId);
+    else
+        RESULT = "";
 :};
 
-GRAPHXAXIS ::= xaxis colom opensquarebracket STRINGLIST:list closesquarebracket {:
+GRAPHXAXIS ::= xaxis colom opensquarebracket
+STRINGLIST:list closesquarebracket {:
     RESULT = list;
 :};
 
-GRAPHVALUES ::= values colom opensquarebracket DOUBLELIST:list closesquarebracket {:
+GRAPHVALUES ::= values colom opensquarebracket
+DOUBLELIST:list closesquarebracket {:
     RESULT = list;
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* GRAFICAS DE LINEAS */
 LINEGRAPH ::= linegraph openbracket LINEGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
-    reports.graphs.add(graph);
-    System.out.println("Agregando grafica de lineas: " + graph.title);
+    reports.addGraph(graph, "lineas");
 :};
 
 LINEGRAPHPROPS ::= LINEGRAPHPROPS:graph LINEGRAPHPROP:prop semicolom {:
@@ -192,26 +208,32 @@ LINEGRAPHPROPS ::= LINEGRAPHPROPS:graph LINEGRAPHPROP:prop semicolom {:
     LineGraph lineGraph = new LineGraph();
     RESULT = lineGraph;
     RESULT.setProp(prop);
+:} | error semicolom {:
+    LineGraph lineGraph = new LineGraph();
+    RESULT = lineGraph;
 :};
 
 LINEGRAPHPROP ::= GRAPHTITLE:text {:
-    RESULT = new Object[] {text, "title", textright};
+    RESULT = new Object[] {text, "title", textleft};
 :} | LINEGRAPHFILE:text {:
-    RESULT = new Object[] {text, "file", textright};
+    RESULT = new Object[] {text, "file", textleft};
 :};
 
 LINEGRAPHFILE ::= file colom strtext:text {:
     RESULT = Tools.trimStr(text);
 :} | file colom id:tId {:
     Reports reports = Reports.getInstance();
-    RESULT = (String) reports.getGlobalProp(tId);
+    if(reports.getGlobalProp(tId) != null)
+        RESULT = (String) reports.getGlobalProp(tId);
+    else
+        RESULT = "";
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* GRAFICAS DE PIE */
 PIEGRAPH ::= piegraph openbracket PIEGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
-    reports.graphs.add(graph);
-    System.out.println("Agregando grafica de pie: " + graph.title);
+    reports.addGraph(graph, "pie");
 :};
 
 PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
@@ -221,13 +243,16 @@ PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
     PieGraph pieGraph = new PieGraph();
     RESULT = pieGraph;
     RESULT.setProp(prop);
+:} | error semicolom {:
+    PieGraph pieGraph = new PieGraph();
+    RESULT = pieGraph;
 :};
 
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* GRAFICAS DE BARRAS */
 BARGRAPH ::= bargraph openbracket BARGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
-    reports.graphs.add(graph);
-    System.out.println("Agregando grafica de barras: " + graph.title);
+    reports.addGraph(graph, "barras");
 :};
 
 BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:
@@ -237,26 +262,35 @@ BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:
     BarGraph barGraph = new BarGraph();
     RESULT = barGraph;
     RESULT.setProp(prop);
+:} | error semicolom {:
+    BarGraph barGraph = new BarGraph();
+    RESULT = barGraph;
 :};
 
 BARGRAPHPROP ::= GRAPHPROP:prop {:
     RESULT = prop;
 :} | BARGRAPHPTITLEX:prop {:
-    RESULT = new Object[] {prop, "xaxisTitle", propright};
+    RESULT = new Object[] {prop, "xaxisTitle", propleft};
 :} | BARGRAPHPTITLEY:prop {:
-    RESULT = new Object[] {prop, "yaxisTitle", propright};
+    RESULT = new Object[] {prop, "yaxisTitle", propleft};
 :};
 
 BARGRAPHPTITLEX ::= bgtitlex colom strtext:text {:
     RESULT = Tools.trimStr(text);
 :} | bgtitlex colom id:tId {:
     Reports reports = Reports.getInstance();
-    RESULT = (String) reports.getGlobalProp(tId);
+    if(reports.getGlobalProp(tId) != null)
+        RESULT = (String) reports.getGlobalProp(tId);
+    else
+        RESULT = "";
 :};
 
 BARGRAPHPTITLEY ::= bgtitley colom strtext:text {:
     RESULT = Tools.trimStr(text);
 :} | bgtitley colom id:tId {:
     Reports reports = Reports.getInstance();
-    RESULT = (String) reports.getGlobalProp(tId);
+    if(reports.getGlobalProp(tId) != null)
+        RESULT = (String) reports.getGlobalProp(tId);
+    else
+        RESULT = "";
 :};

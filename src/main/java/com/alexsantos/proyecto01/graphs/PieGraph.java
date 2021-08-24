@@ -1,6 +1,7 @@
 package com.alexsantos.proyecto01.graphs;
 
 import java.io.File;
+import java.io.IOException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -20,8 +21,12 @@ public class PieGraph extends Graph {
         DefaultPieDataset dataset = new DefaultPieDataset();
 
         // AGREGAR DATOS
-        for (int i = 0; i < values.size(); i++) {
-            dataset.setValue(xaxis.get(i), values.get(i));
+        if (xaxis.size() >= values.size()) {
+            for (int i = 0; i < values.size(); i++) {
+                dataset.setValue(xaxis.get(i), values.get(i));
+            }
+        } else {
+            System.out.println("Error faltan valores en el eje X en grafica de pie " + title);
         }
 
         return dataset;
@@ -45,7 +50,7 @@ public class PieGraph extends Graph {
         try {
             File file = new File(path + "piechart_" + title + ".jpeg");
             ChartUtils.saveChartAsJPEG(file, chart, 600, 400);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println(ex);
         }
     }

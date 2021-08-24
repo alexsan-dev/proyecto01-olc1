@@ -17,7 +17,7 @@ public class Reports {
     public static ArrayList<Graph> graphs;
     public static HashMap<String, Object> properties;
 
-    private static void cleanProps() {
+    public static void cleanProps() {
         properties = new HashMap<String, Object>();
         graphs = new ArrayList<Graph>();
         reports = new Reports();
@@ -36,17 +36,32 @@ public class Reports {
         if (path1.equals("") && path2.equals("")) {
             path1 = pathA;
             path2 = pathB;
+            System.out.println("Comparando proyectos " + path1 + " y " + path2);
         } else {
             System.out.println("Error en linea: " + line + " ya se ejecuto COMPARE una vez.");
         }
     }
 
     public static void setGlobalProp(String key, Object value) {
-        properties.put(key, value);
+        if (value != null) {
+            properties.put(key, value);
+            System.out.println("Declarando variable " + key);
+        } else {
+            System.out.println("Error null en " + key);
+        }
     }
 
     public static Object getGlobalProp(String key) {
         return properties.getOrDefault(key, null);
+    }
+
+    public static void addGraph(Graph graph, String title) {
+        if (title != null) {
+            graphs.add(graph);
+            System.out.println("Agregando grafica de " + title + ": " + graph.title);
+        } else {
+            System.out.println("Error titulo vacio");
+        }
     }
 
     public static void generateGraphs() {
@@ -58,8 +73,11 @@ public class Reports {
         }
 
         // GRAFICAR
+        System.out.println("Generando todas las graficas");
         for (int i = 0; i < graphs.size(); i++) {
             graphs.get(i).generateGraph(path);
         }
+
+        System.out.println("Fin de analisis lexico");
     }
 }
