@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import com.alexsantos.proyecto01.graphs.*;
 import com.alexsantos.proyecto01.utils.Tools;
 import com.alexsantos.proyecto01.fca.Reports;
-import com.alexsantos.proyecto01.controllers.Primary;
 
 /* ERRORES */
 parser code {:
     public void syntax_error(Symbol s){
-        Primary.print("Error Sintáctico en la Línea " + s.right +
+        System.out.println("Error Sintáctico en la Línea " + s.right +
         " Columna " + s.left + ". Componente: " + s.value + ".");
 
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-        Primary.print("Error síntactico irrecuperable en la Línea " +
+        System.out.println("Error síntactico irrecuperable en la Línea " +
         s.right + " Columna " + s.left + ". Componente: " + s.value +
         " no reconocido.");
     }
@@ -119,9 +118,9 @@ id:text {:
 /* INICIO */
 START ::= MAIN {:
     Reports reports = Reports.getInstance();
-    Primary.print("Generando todas las graficas");
+    System.out.println("Generando todas las graficas");
     reports.generateGraphs();
-    Primary.print("Fin de analisis lexico");
+    System.out.println("Fin de analisis lexico");
 :};
 
 /* DECLARACION INICIAL */
@@ -137,7 +136,7 @@ FUNCTION ::= BARGRAPH | PIEGRAPH | LINEGRAPH | COMPARE semicolom {: :};
 COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2 closeparenthesis {:
     Reports reports = Reports.getInstance();
     reports.setComparePaths(Tools.trimStr(path1), Tools.trimStr(path2), idright);
-    Primary.print("Comparando proyectos " + Tools.trimStr(path1) + " y " + Tools.trimStr(path2));
+    System.out.println("Comparando proyectos " + Tools.trimStr(path1) + " y " + Tools.trimStr(path2));
 :};
 
 /* DECALARAR GLOBALES */
@@ -148,11 +147,11 @@ DECLARATIONS ::= DECLARATIONS DECLARATION semicolom | DECLARATION semicolom {: :
 DECLARATION ::= strtype id:idstr equals strtext:text {:
     Reports reports = Reports.getInstance();
     reports.setGlobalProp(idstr, Tools.trimStr(text));
-    Primary.print("Declarando variable " + idstr);
+    System.out.println("Declarando variable " + idstr);
 :} | doubletype id:idstr equals decimal:text {:
     Reports reports = Reports.getInstance();
     reports.setGlobalProp(idstr, Double.parseDouble(text));
-    Primary.print("Declarando variable " + idstr);
+    System.out.println("Declarando variable " + idstr);
 :};
 
 /* PRODUCCIONES DE GRAFICAS EN GENERAL */
@@ -183,7 +182,7 @@ GRAPHVALUES ::= values colom opensquarebracket DOUBLELIST:list closesquarebracke
 LINEGRAPH ::= linegraph openbracket LINEGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.graphs.add(graph);
-    Primary.print("Agregando grafica de lineas: " + graph.title);
+    System.out.println("Agregando grafica de lineas: " + graph.title);
 :};
 
 LINEGRAPHPROPS ::= LINEGRAPHPROPS:graph LINEGRAPHPROP:prop semicolom {:
@@ -212,7 +211,7 @@ LINEGRAPHFILE ::= file colom strtext:text {:
 PIEGRAPH ::= piegraph openbracket PIEGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.graphs.add(graph);
-    Primary.print("Agregando grafica de pie: " + graph.title);
+    System.out.println("Agregando grafica de pie: " + graph.title);
 :};
 
 PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
@@ -228,7 +227,7 @@ PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
 BARGRAPH ::= bargraph openbracket BARGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.graphs.add(graph);
-    Primary.print("Agregando grafica de barras: " + graph.title);
+    System.out.println("Agregando grafica de barras: " + graph.title);
 :};
 
 BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:

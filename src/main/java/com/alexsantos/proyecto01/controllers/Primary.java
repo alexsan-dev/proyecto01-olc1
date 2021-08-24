@@ -1,5 +1,7 @@
 package com.alexsantos.proyecto01.controllers;
 
+import com.alexsantos.proyecto01.analyzer.fca.FCAParser;
+import com.alexsantos.proyecto01.analyzer.fca.FCAScanner;
 import com.jfoenix.controls.JFXTabPane;
 import java.io.*;
 import javafx.fxml.FXML;
@@ -16,6 +18,8 @@ public class Primary {
 
     @FXML
     private JFXTabPane tabs;
+    @FXML
+    private TextArea output;
 
     private String readFile(File file) {
         // BUFFER
@@ -45,6 +49,50 @@ public class Primary {
     }
 
     @FXML
+    private void saveFileAs() {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Archivos FCA (*.fca)", "*.fca");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(new Stage());
+
+        if (file != null) {
+            Tab currentTab = tabs.getTabs().get(selectedEditor);
+            saveFileOnPath(file.toString());
+            currentTab.setText(file.getName());
+            currentTab.setId(file.toString());
+        }
+    }
+
+    @FXML
+    private void saveFile() {
+        String path = tabs.getTabs().get(selectedEditor).getId();
+        saveFileOnPath(path);
+    }
+
+    @FXML
+    private void saveFileOnPath(String path) {
+        AnchorPane anchorPane = (AnchorPane) tabs.getTabs().get(selectedEditor).getContent();
+        TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+        String content = textArea.getText();
+
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(path));
+            writer.write(content);
+        } catch (IOException ex) {
+            System.out.println(ex);
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException ex) {
+                System.out.println(ex);
+            }
+        }
+    }
+
+    @FXML
     private void openFile() {
         // ABRIR
         FileChooser chooser = new FileChooser();
@@ -54,9 +102,14 @@ public class Primary {
         File file = chooser.showOpenDialog(new Stage());
 
         // ASIGNAR A EDITOR ACTUAL
-        AnchorPane anchorPane = (AnchorPane) tabs.getTabs().get(selectedEditor).getContent();
-        TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
-        textArea.setText(readFile(file));
+        if (file != null) {
+            Tab currentTab = tabs.getTabs().get(selectedEditor);
+            AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
+            TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+            textArea.setText(readFile(file));
+            currentTab.setId(file.toString());
+            currentTab.setText(file.getName());
+        }
     }
 
     @FXML
@@ -86,6 +139,7 @@ public class Primary {
         textArea.setStyle("-fx-text-fill: #fff;");
         textArea.setFont(Font.font("Fira Code SemiBold", 13));
         textArea.setWrapText(true);
+        textArea.setId("");
 
         newTab.setOnSelectionChanged(e -> {
             selectedEditor = tabs.getSelectionModel().getSelectedIndex();
@@ -98,11 +152,36 @@ public class Primary {
         selectedEditor = size;
     }
 
-    public void initialize() {
-        addEditorTab();
+    @FXML
+    private void clear() {
+        output.setText("");
     }
 
-    public static void print(Object value) {
-        System.out.println(value);
+    @FXML
+    private void compile() {
+        Tab currentTab = tabs.getTabs().get(selectedEditor);
+        AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
+        TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+        output.setText("");
+
+        try {
+            FCAParser parser = new FCAParser(new FCAScanner(new StringReader(textArea.getText())));
+            parser.parse();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public void initialize() {
+        addEditorTab();
+
+        PrintStream out = new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                output.appendText("" + (char) (b & 0xFF));
+            }
+        });
+
+        System.setOut(out);
     }
 }

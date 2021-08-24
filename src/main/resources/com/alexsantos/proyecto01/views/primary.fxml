@@ -23,8 +23,8 @@
                 <Menu mnemonicParsing="false" text="Archivos">
                     <items>
                         <MenuItem accelerator="Shortcut+O" mnemonicParsing="false" onAction="#openFile" text="Abrir" />
-                        <MenuItem accelerator="Shortcut+S" mnemonicParsing="false" text="Guardar" />
-                        <MenuItem accelerator="Shortcut+Shift+S" mnemonicParsing="false" text="Guardar como" />
+                        <MenuItem accelerator="Shortcut+S" mnemonicParsing="false" onAction="#saveFile" text="Guardar" />
+                        <MenuItem accelerator="Shortcut+Shift+S" mnemonicParsing="false" onAction="#saveFileAs" text="Guardar como" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Editor">
@@ -35,8 +35,8 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Herramientas">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Ejecutar" />
-                        <MenuItem mnemonicParsing="false" text="Consola" />
+                        <MenuItem onAction="#compile" accelerator="Shortcut+R" mnemonicParsing="false" text="Ejecutar" />
+                        <MenuItem onAction="#clear" accelerator="Shortcut+L" mnemonicParsing="false" text="Limpiar consola" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Reportes">
@@ -114,7 +114,7 @@
                                         </VBox>
                                     </children>
                                 </HBox>
-                                <TextArea editable="false" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="273.0" prefWidth="315.0" promptText="Texto de salida y errores." style="-fx-text-fill: #fff;" styleClass="output-console">
+                                <TextArea wrapText="true"  fx:id="output" editable="false" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="273.0" prefWidth="315.0" promptText="Texto de salida y errores." style="-fx-text-fill: #fff;" styleClass="output-console">
                                     <font>
                                         <Font name="Fira Code SemiBold" size="13.0" />
                                     </font>
@@ -131,7 +131,7 @@
                         </Line>
                         <VBox alignment="CENTER" prefHeight="371.0" prefWidth="22.0" HBox.hgrow="ALWAYS">
                             <children>
-                                <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="65.0" ripplerFill="WHITE" style="-fx-background-color: #03A9F4; -fx-background-radius: 100;">
+                                <JFXButton  onAction="#compile" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="65.0" ripplerFill="WHITE" style="-fx-background-color: #03A9F4; -fx-background-radius: 100;">
                                     <graphic>
                                         <ImageView fitHeight="93.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
                                             <image>

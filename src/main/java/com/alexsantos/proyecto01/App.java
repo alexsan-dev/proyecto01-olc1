@@ -43,15 +43,5 @@ public class App extends Application {
     // INICIAR APP
     public static void main(String[] args) {
         launch();
-
-        /*
-        try {
-            File file = new File("/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/fca/input.fca");
-            FCAParser parser = new FCAParser(new FCAScanner(new BufferedReader(new FileReader(file))));
-            parser.parse();
-        } catch (Exception ex) {
-            System.err.println("Error: " + ex.getMessage());
-        }
-         */
     }
 }
