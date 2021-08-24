@@ -5,10 +5,17 @@ import com.alexsantos.proyecto01.analyzer.fca.FCAScanner;
 import com.alexsantos.proyecto01.fca.Reports;
 import com.jfoenix.controls.JFXTabPane;
 import java.io.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -16,11 +23,16 @@ import javafx.stage.Stage;
 public class Primary {
 
     private int selectedEditor = 0;
+    private char dotSymbol = '•';
 
     @FXML
     private JFXTabPane tabs;
     @FXML
     private TextArea output;
+    @FXML
+    private StackPane mainPane;
+    @FXML
+    private VBox mainContainer;
 
     private String readFile(File file) {
         // BUFFER
@@ -58,28 +70,34 @@ public class Primary {
 
         if (file != null) {
             Tab currentTab = tabs.getTabs().get(selectedEditor);
-            saveFileOnPath(file.toString());
-            currentTab.setText(file.getName());
+            currentTab.setText(file.getName().replace(Character.toString(dotSymbol), ""));
             currentTab.setId(file.toString());
+
+            saveFileOnPath(file.toString());
         }
     }
 
     @FXML
     private void saveFile() {
         String path = tabs.getTabs().get(selectedEditor).getId();
-        saveFileOnPath(path);
+        if (path == null) {
+            saveFileAs();
+        } else {
+            saveFileOnPath(path);
+        }
     }
 
     @FXML
     private void saveFileOnPath(String path) {
-        AnchorPane anchorPane = (AnchorPane) tabs.getTabs().get(selectedEditor).getContent();
+        Tab currentTab = tabs.getTabs().get(selectedEditor);
+        AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
         TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
-        String content = textArea.getText();
 
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(path));
-            writer.write(content);
+            writer.write(textArea.getText());
+            currentTab.setText(currentTab.getText().replace(" " + dotSymbol, ""));
         } catch (IOException ex) {
             System.out.println(ex);
         } finally {
@@ -107,17 +125,44 @@ public class Primary {
             Tab currentTab = tabs.getTabs().get(selectedEditor);
             AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
             TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
-            textArea.setText(readFile(file));
+
+            String content = readFile(file);
+            textArea.setText(content);
             currentTab.setId(file.toString());
-            currentTab.setText(file.getName());
+            currentTab.setText(file.getName().replaceAll(Character.toString(dotSymbol), ""));
         }
     }
 
     @FXML
     private void closeEditorTab() {
         if (tabs.getTabs().size() > 1) {
-            tabs.getTabs().remove(selectedEditor);
+            Tab currentTab = tabs.getTabs().get(selectedEditor);
+            if (currentTab.getText().charAt(currentTab.getText().length() - 1) != dotSymbol) {
+                tabs.getTabs().remove(selectedEditor);
+            } else {
+                ButtonType confirm = showDialog("Guardar archivo", "No se han guardado los cambios de esta pestaña,\nes posible que todos los cambios podrian perderse.");
+
+                if (confirm == ButtonType.OK) {
+                    saveFile();
+                }
+
+                tabs.getTabs().remove(selectedEditor);
+            }
         }
+    }
+
+    public ButtonType showDialog(String title, String content) {
+        // EFECTO
+        BoxBlur blur = new BoxBlur(5, 5, 5);
+        mainContainer.setEffect(blur);
+
+        // Alert
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(content);
+        alert.setTitle(title);
+        alert.showAndWait();
+        mainContainer.setEffect(null);
+        return alert.getResult();
     }
 
     @FXML
@@ -131,26 +176,72 @@ public class Primary {
         anchorPane.setMinWidth(0);
         anchorPane.setPrefHeight(219.0);
         anchorPane.setPrefWidth(650.0);
+        anchorPane.setStyle("-fx-background-color: #37474F;-fx-background-radius: 10;");
+
+        TextArea linesArea = new TextArea();
+        linesArea.setMaxHeight(1.7976931348623157E308);
+        linesArea.setLayoutX(5);
+        linesArea.setPrefHeight(245.0);
+        linesArea.setPrefWidth(45.0);
+        linesArea.setMinWidth(0);
+        linesArea.setWrapText(true);
+        linesArea.setStyle("-fx-text-fill: #ddd;");
+        linesArea.getStyleClass().add("line-area");
+        linesArea.setFont(Font.font("Fira Code SemiBold", 13));
+        linesArea.setEditable(false);
+        linesArea.setText("1");
 
         TextArea textArea = new TextArea();
         textArea.setMaxHeight(1.7976931348623157E308);
         textArea.setPrefHeight(245.0);
-        textArea.setPrefWidth(610.0);
+        textArea.setPrefWidth(595.0);
+        textArea.setLayoutX(50);
         textArea.setPromptText("Escribe tu codigo aqui.");
         textArea.setStyle("-fx-text-fill: #fff;");
         textArea.setFont(Font.font("Fira Code SemiBold", 13));
-        textArea.setWrapText(true);
         textArea.setId("");
+
+        textArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable,
+                    String oldValue, String newValue) {
+
+                int lines = newValue.split("\n").length;
+                Double caretPosition = textArea.scrollTopProperty().get();
+                String newLines = "";
+
+                for (int i = 0; i < lines; i++) {
+                    newLines += (i + 1) + "\n";
+                }
+                linesArea.setText(newLines);
+                linesArea.scrollTopProperty().setValue(caretPosition);
+
+                if (!newTab.getText().isEmpty()) {
+                    if (newTab.getText().charAt(newTab.getText().length() - 1) != dotSymbol) {
+                        newTab.setText(newTab.getText() + " " + dotSymbol);
+                    }
+                }
+            }
+        });
+
+        textArea.scrollTopProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+                linesArea.scrollTopProperty().setValue(newVal.intValue());
+            }
+        });
 
         newTab.setOnSelectionChanged(e -> {
             selectedEditor = tabs.getSelectionModel().getSelectedIndex();
         });
 
         anchorPane.getChildren().add(textArea);
+        anchorPane.getChildren().add(linesArea);
         newTab.setContent(anchorPane);
         tabs.getTabs().add(newTab);
         tabs.getSelectionModel().selectLast();
         selectedEditor = size;
+        textArea.requestFocus();
     }
 
     @FXML
@@ -160,6 +251,8 @@ public class Primary {
 
     @FXML
     private void compile() {
+        saveFile();
+
         Reports reports = Reports.getInstance();
         reports.cleanProps();
 

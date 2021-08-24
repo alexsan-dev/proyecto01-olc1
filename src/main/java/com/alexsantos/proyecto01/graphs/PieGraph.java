@@ -21,7 +21,7 @@ public class PieGraph extends Graph {
         DefaultPieDataset dataset = new DefaultPieDataset();
 
         // AGREGAR DATOS
-        if (xaxis.size() >= values.size()) {
+        if (values.size() > 0 && xaxis.size() >= values.size()) {
             for (int i = 0; i < values.size(); i++) {
                 dataset.setValue(xaxis.get(i), values.get(i));
             }

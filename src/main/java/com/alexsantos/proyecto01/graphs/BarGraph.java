@@ -55,7 +55,7 @@ public class BarGraph extends Graph {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // AGREGAR DATOS
-        if (xaxis.size() >= values.size()) {
+        if (values.size() > 0 && xaxis.size() >= values.size()) {
             for (int i = 0; i < values.size(); i++) {
                 dataset.addValue(values.get(i), xaxis.get(i), "");
             }

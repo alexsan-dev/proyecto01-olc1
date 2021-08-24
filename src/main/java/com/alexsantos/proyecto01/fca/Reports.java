@@ -65,19 +65,24 @@ public class Reports {
     }
 
     public static void generateGraphs() {
-        // CREAR CARPETA SI NO EXISTE
-        String path = "./report/assets/";
-        File projectDir = new File(path);
-        if (!projectDir.exists()) {
-            projectDir.mkdirs();
-        }
+        Thread thread = new Thread() {
+            public void run() {
+                // CREAR CARPETA SI NO EXISTE
+                String path = "./report/assets/";
+                File projectDir = new File(path);
+                if (!projectDir.exists()) {
+                    projectDir.mkdirs();
+                }
 
-        // GRAFICAR
-        System.out.println("Generando todas las graficas");
-        for (int i = 0; i < graphs.size(); i++) {
-            graphs.get(i).generateGraph(path);
-        }
+                // GRAFICAR
+                System.out.println("Generando todas las graficas");
+                for (int i = 0; i < graphs.size(); i++) {
+                    graphs.get(i).generateGraph(path);
+                }
 
-        System.out.println("Fin de analisis lexico");
+                System.out.println("Fin de analisis lexico");
+            }
+        };
+        thread.start();
     }
 }

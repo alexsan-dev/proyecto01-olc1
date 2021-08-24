@@ -11,101 +11,65 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1000.0" stylesheets="@../styles/primary.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alexsantos.proyecto01.controllers.Primary">
+<StackPane fx:id="mainPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.alexsantos.proyecto01.controllers.Primary">
     <children>
-        <MenuBar prefHeight="29.0" prefWidth="718.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="Archivos">
-                    <items>
-                        <MenuItem accelerator="Shortcut+O" mnemonicParsing="false" onAction="#openFile" text="Abrir" />
-                        <MenuItem accelerator="Shortcut+S" mnemonicParsing="false" onAction="#saveFile" text="Guardar" />
-                        <MenuItem accelerator="Shortcut+Shift+S" mnemonicParsing="false" onAction="#saveFileAs" text="Guardar como" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Editor">
-                    <items>
-                        <MenuItem onAction="#closeEditorTab" mnemonicParsing="false" accelerator="Shortcut+Q" text="Cerrar pestaña" />
-                        <MenuItem onAction="#addEditorTab" accelerator="Shortcut+N" mnemonicParsing="false" text="Abrir pestaña" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Herramientas">
-                    <items>
-                        <MenuItem onAction="#compile" accelerator="Shortcut+R" mnemonicParsing="false" text="Ejecutar" />
-                        <MenuItem onAction="#clear" accelerator="Shortcut+L" mnemonicParsing="false" text="Limpiar consola" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Reportes">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Errores" />
-                        <MenuItem mnemonicParsing="false" text="Estadistico" />
-                        <MenuItem mnemonicParsing="false" text="JSON" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-        <HBox minWidth="-Infinity" prefHeight="371.0" prefWidth="700.0">
+        <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1000.0" stylesheets="@../styles/primary.css">
             <children>
-                <VBox alignment="CENTER" minWidth="-Infinity" prefHeight="370.0" prefWidth="650.0">
+                <MenuBar prefHeight="29.0" prefWidth="718.0">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="Archivos">
+                            <items>
+                                <MenuItem accelerator="Shortcut+O" mnemonicParsing="false" onAction="#openFile" text="Abrir" />
+                                <MenuItem accelerator="Shortcut+S" mnemonicParsing="false" onAction="#saveFile" text="Guardar" />
+                                <MenuItem accelerator="Shortcut+Shift+S" mnemonicParsing="false" onAction="#saveFileAs" text="Guardar como" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Editor">
+                            <items>
+                                <MenuItem accelerator="Shortcut+Q" mnemonicParsing="false" onAction="#closeEditorTab" text="Cerrar pestaña" />
+                                <MenuItem accelerator="Shortcut+N" mnemonicParsing="false" onAction="#addEditorTab" text="Abrir pestaña" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Herramientas">
+                            <items>
+                                <MenuItem accelerator="Shortcut+R" mnemonicParsing="false" onAction="#compile" text="Ejecutar" />
+                                <MenuItem accelerator="Shortcut+L" mnemonicParsing="false" onAction="#clear" text="Limpiar consola" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Reportes">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Errores" />
+                                <MenuItem mnemonicParsing="false" text="Estadistico" />
+                                <MenuItem mnemonicParsing="false" text="JSON" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <HBox minWidth="-Infinity" prefHeight="371.0" prefWidth="700.0">
                     <children>
-                        <HBox prefHeight="95.0" prefWidth="312.0" spacing="10.0">
+                        <VBox alignment="CENTER" minWidth="-Infinity" prefHeight="370.0" prefWidth="650.0">
                             <children>
-                                <ImageView fitHeight="67.0" fitWidth="42.0" opacity="0.8" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../assets/icons-code.png" />
-                                    </image>
-                                </ImageView>
-                                <VBox prefHeight="56.0" prefWidth="278.0">
-                                    <children>
-                                        <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Editores de codigo" wrappingWidth="255.7294921875">
-                                            <font>
-                                                <Font name="Montserrat Bold" size="17.0" />
-                                            </font>
-                                        </Text>
-                                        <Text opacity="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="Escribe el codigo a ser interpretado." wrappingWidth="255.7294921875">
-                                            <font>
-                                                <Font name="Montserrat Regular" size="14.0" />
-                                            </font>
-                                        </Text>
-                                    </children>
-                                </VBox>
-                            </children>
-                        </HBox>
-                        <JFXTabPane fx:id="tabs" maxHeight="1.7976931348623157E308" prefHeight="315.0" prefWidth="312.0">
-                            <tabs>
-                            </tabs>
-                            <cursor>
-                                <Cursor fx:constant="HAND" />
-                            </cursor>
-                        </JFXTabPane>
-                    </children>
-                    <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                    </padding>
-                </VBox>
-                <HBox minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="370.0" prefWidth="350.0">
-                    <children>
-                        <VBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="370.0" prefWidth="504.0" styleClass="console-box">
-                            <children>
-                                <HBox prefHeight="56.0" prefWidth="312.0" spacing="10.0">
+                                <HBox prefHeight="95.0" prefWidth="312.0" spacing="10.0">
                                     <children>
                                         <ImageView fitHeight="67.0" fitWidth="42.0" opacity="0.8" pickOnBounds="true" preserveRatio="true">
                                             <image>
-                                                <Image url="@../assets/icons-console.png" />
+                                                <Image url="@../assets/icons-code.png" />
                                             </image>
                                         </ImageView>
                                         <VBox prefHeight="56.0" prefWidth="278.0">
                                             <children>
-                                                <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Consola de salida" wrappingWidth="255.7294921875">
+                                                <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Editores de codigo" wrappingWidth="255.7294921875">
                                                     <font>
                                                         <Font name="Montserrat Bold" size="17.0" />
                                                     </font>
                                                 </Text>
-                                                <Text opacity="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="Aqui se mostrara el resultado." wrappingWidth="255.7294921875">
+                                                <Text opacity="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="Escribe el codigo a ser interpretado." wrappingWidth="255.7294921875">
                                                     <font>
                                                         <Font name="Montserrat Regular" size="14.0" />
                                                     </font>
@@ -114,43 +78,84 @@
                                         </VBox>
                                     </children>
                                 </HBox>
-                                <TextArea wrapText="true"  fx:id="output" editable="false" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="273.0" prefWidth="315.0" promptText="Texto de salida y errores." style="-fx-text-fill: #fff;" styleClass="output-console">
-                                    <font>
-                                        <Font name="Fira Code SemiBold" size="13.0" />
-                                    </font>
-                                </TextArea>
+                                <JFXTabPane fx:id="tabs" maxHeight="1.7976931348623157E308" prefHeight="315.0" prefWidth="312.0">
+                                    <tabs>
+                                    </tabs>
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </JFXTabPane>
                             </children>
                             <padding>
                                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                             </padding>
                         </VBox>
-                        <Line endY="369.29290771484375" opacity="0.19">
-                            <HBox.margin>
-                                <Insets left="-3.0" />
-                            </HBox.margin>
-                        </Line>
-                        <VBox alignment="CENTER" prefHeight="371.0" prefWidth="22.0" HBox.hgrow="ALWAYS">
+                        <HBox minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="370.0" prefWidth="350.0">
                             <children>
-                                <JFXButton  onAction="#compile" buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="65.0" ripplerFill="WHITE" style="-fx-background-color: #03A9F4; -fx-background-radius: 100;">
-                                    <graphic>
-                                        <ImageView fitHeight="93.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../assets/icons-sync.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                    <cursor>
-                                        <Cursor fx:constant="HAND" />
-                                    </cursor>
-                                </JFXButton>
+                                <VBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="370.0" prefWidth="504.0" styleClass="console-box">
+                                    <children>
+                                        <HBox prefHeight="56.0" prefWidth="312.0" spacing="10.0">
+                                            <children>
+                                                <ImageView fitHeight="67.0" fitWidth="42.0" opacity="0.8" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons-console.png" />
+                                                    </image>
+                                                </ImageView>
+                                                <VBox prefHeight="56.0" prefWidth="278.0">
+                                                    <children>
+                                                        <Text opacity="0.8" strokeType="OUTSIDE" strokeWidth="0.0" text="Consola de salida" wrappingWidth="255.7294921875">
+                                                            <font>
+                                                                <Font name="Montserrat Bold" size="17.0" />
+                                                            </font>
+                                                        </Text>
+                                                        <Text opacity="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="Aqui se mostrara el resultado." wrappingWidth="255.7294921875">
+                                                            <font>
+                                                                <Font name="Montserrat Regular" size="14.0" />
+                                                            </font>
+                                                        </Text>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <TextArea fx:id="output" editable="false" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="273.0" prefWidth="315.0" promptText="Texto de salida y errores." style="-fx-text-fill: #fff;" styleClass="output-console" wrapText="true">
+                                            <font>
+                                                <Font name="Fira Code SemiBold" size="13.0" />
+                                            </font>
+                                        </TextArea>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                    </padding>
+                                </VBox>
+                                <Line endY="369.29290771484375" opacity="0.19">
+                                    <HBox.margin>
+                                        <Insets left="-3.0" />
+                                    </HBox.margin>
+                                </Line>
+                                <VBox alignment="CENTER" prefHeight="371.0" prefWidth="22.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <JFXButton buttonType="RAISED" contentDisplay="GRAPHIC_ONLY" minHeight="-Infinity" minWidth="-Infinity" onAction="#compile" prefHeight="65.0" prefWidth="65.0" ripplerFill="WHITE" style="-fx-background-color: #03A9F4; -fx-background-radius: 100;">
+                                            <graphic>
+                                                <ImageView fitHeight="93.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../assets/icons-sync.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </JFXButton>
+                                    </children>
+                                    <HBox.margin>
+                                        <Insets left="-34.0" right="-34.0" />
+                                    </HBox.margin>
+                                </VBox>
                             </children>
-                            <HBox.margin>
-                                <Insets left="-34.0" right="-34.0" />
-                            </HBox.margin>
-                        </VBox>
+                        </HBox>
                     </children>
                 </HBox>
             </children>
-        </HBox>
+        </VBox>
     </children>
-</VBox>
+</StackPane>

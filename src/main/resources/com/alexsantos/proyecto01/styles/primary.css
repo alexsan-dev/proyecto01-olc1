@@ -34,11 +34,45 @@
     -fx-font-family: "Montserrat";
 }
 
+.saveBtn {
+    -fx-background-color: #263238;
+}
+
+.closeBtn {
+    -fx-background-color: #263238;
+}
+
+.saveBtn .text{
+    -fx-font-size: 13px;
+    -fx-font-family: "Montserrat";
+}
+
+.closeBtn .text{
+    -fx-font-size: 13px;
+    -fx-font-family: "Montserrat";
+}
+
 .text-area *.content {
     -fx-background-color:#37474F;
-    -fx-background-radius: 0 10 10 10;
     -fx-padding: 15;
+}
 
+.line-area *.content{
+    -fx-background-color:#37474F;
+    -fx-padding: 15 8 15 0;
+}
+
+.line-area *.text{
+    -fx-text-alignment: right;
+}
+
+.line-area .scroll-bar:vertical {
+    -fx-pref-width: 1;
+    -fx-opacity: 0;
+}
+.line-area .scroll-bar:horizontal {
+    -fx-pref-height: 1;
+    -fx-opacity: 0;
 }
 
 .jfx-tab-pane *.headers-region>*.tab>*.jfx-rippler {
