@@ -7,6 +7,7 @@ comentario multilinea
 GenerarReporteEstadistico {
     DefinirGlobales {
         string title = "Mi grafica";
+        string titleline = "Mi grafica lineas";
         string titlepie = "Mi grafica PIE";
         String ejex01 = "Texto01";
         String ejexp01 = "Texto01";
@@ -25,6 +26,11 @@ GenerarReporteEstadistico {
         titulo: titlepie;
         ejex: [ejexp01,"Texto02","Texto03","Texto04"];
         valores: [22.4,74.2,54.5,36.3];
+    }
+
+    GraficaLineas {
+        titulo: titleline;
+        archivo: "Su mecha";
     }
 
     compare("Su mecha", "su makina");

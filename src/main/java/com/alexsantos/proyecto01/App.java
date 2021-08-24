@@ -1,10 +1,12 @@
 package com.alexsantos.proyecto01;
 
+/*
 import com.alexsantos.proyecto01.analyzer.fca.FCAParser;
 import com.alexsantos.proyecto01.analyzer.fca.FCAScanner;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+ */
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +23,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 700, 400);
+        scene = new Scene(loadFXML("primary"), 1000, 400);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -40,9 +42,9 @@ public class App extends Application {
 
     // INICIAR APP
     public static void main(String[] args) {
-        //launch();
+        launch();
 
-        // ANALYZADOR
+        /*
         try {
             File file = new File("/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/fca/input.fca");
             FCAParser parser = new FCAParser(new FCAScanner(new BufferedReader(new FileReader(file))));
@@ -50,5 +52,6 @@ public class App extends Application {
         } catch (Exception ex) {
             System.err.println("Error: " + ex.getMessage());
         }
+         */
     }
 }
