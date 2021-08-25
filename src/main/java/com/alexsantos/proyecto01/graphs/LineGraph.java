@@ -8,10 +8,18 @@ public class LineGraph extends Graph {
 
     String file;
 
+    /**
+     * Constructor
+     */
     public LineGraph() {
         file = "";
     }
 
+    /**
+     * Asignar propiedades de grafica
+     *
+     * @param prop
+     */
     @Override
     public void setProp(Object[] prop) {
         if (prop[0] != null) {

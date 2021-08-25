@@ -13,6 +13,9 @@ public class Graph {
     public ArrayList<String> xaxis;
     public ArrayList<Double> values;
 
+    /**
+     * Constructor
+     */
     public Graph() {
         title = "";
         xaxis = new ArrayList<>();
@@ -23,6 +26,11 @@ public class Graph {
 
     }
 
+    /**
+     * Asignar propiedad de grafica
+     *
+     * @param prop
+     */
     public void setProp(Object[] prop) {
         if (prop[0] != null) {
             // NOMBRE DE LA PROPIEDAD

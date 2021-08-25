@@ -5,18 +5,29 @@ import java.util.ArrayList;
 import com.alexsantos.proyecto01.graphs.*;
 import com.alexsantos.proyecto01.utils.Tools;
 import com.alexsantos.proyecto01.fca.Reports;
+import com.alexsantos.proyecto01.analyzer.errors.*;
 
-/* ERRORES */
+/* GENERAL */
 parser code {:
+    String filePath;
+
+    public void setFilePath(String path){
+        filePath = path;
+    }
+
     public void syntax_error(Symbol s){
         System.err.println("\nError sintactico en la linea " + s.right +
         " columna " + s.left + " componente: " + s.value + ".\n");
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
+        errorHandler.add(s, filePath);
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
         System.err.println("\nError sintactico irrecuperable en la linea " +
         s.right + " columna " + s.left + " componente: " + s.value +
         " no reconocido.\n");
+        ErrorHandler errorHandler = ErrorHandler.getInstance();
+        errorHandler.add(s, filePath);
     }
 :}
 

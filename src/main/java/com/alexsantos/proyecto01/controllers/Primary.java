@@ -24,9 +24,11 @@ import javafx.stage.Stage;
 
 public class Primary {
 
+    // GLOBALES
     private int selectedEditor = 0;
     private char dotSymbol = '•';
 
+    // ELEMENTOS
     @FXML
     private JFXTabPane tabs;
     @FXML
@@ -36,13 +38,127 @@ public class Primary {
     @FXML
     private VBox mainContainer;
 
+    /**
+     *
+     */
+    public void initialize() {
+        // INICIAR Y LIMPIAR
+        addEditorTab();
+        clearOutput(true);
+
+        // ASIGNAR SALIDA DE SYSTEM
+        System.setOut(getConsole(false));
+        System.setErr(getConsole(true));
+    }
+
+    /**
+     * Obtener pestaña actual
+     *
+     * @return
+     */
+    public Tab getCurrentTab() {
+        Tab currentTab = tabs.getTabs().get(selectedEditor);
+        return currentTab;
+    }
+
+    /**
+     * Obtener contendor actual
+     *
+     * @return
+     */
+    public AnchorPane getCurrentAnchor() {
+        Tab currentTab = getCurrentTab();
+        AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
+        return anchorPane;
+    }
+
+    /**
+     * Obtener editor actual
+     *
+     * @return
+     */
+    public TextArea getCurrentEditor() {
+        AnchorPane anchorPane = getCurrentAnchor();
+        TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+        return textArea;
+    }
+
+    /**
+     * Crea una instancia de PrintStream para las consolas en System
+     *
+     * @param isErr
+     * @return
+     */
+    public PrintStream getConsole(boolean isErr) {
+        PrintStream out = new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                // TEXTO
+                Text line = new Text("" + (char) (b & 0xFF));
+                line.setStyle("-fx-font-smoothing-type: lcd;-fx-fill:" + (isErr ? "#F44336;-fx-font-weight:bold;" : "#fff;") + "-fx-font-family: Fira Code;");
+
+                // AGREGAR CARACTER
+                output.getChildren().add(line);
+            }
+        });
+        return out;
+    }
+
+    /**
+     * Borrar consola y agregar placeholder
+     *
+     * @param isPlaceholder
+     */
+    private void clearOutput(boolean isPlaceholder) {
+        // PLACEHOLDER
+        Text placeholder = new Text("Salida de consola y errores.");
+        placeholder.setStyle("-fx-font-smoothing-type: lcd;-fx-fill: #fff;-fx-font-family: Fira Code;");
+
+        // LIMPIAR
+        output.getChildren().clear();
+
+        // AGREGAR PLACEHOLDER
+        if (isPlaceholder) {
+            output.getChildren().add(placeholder);
+        }
+    }
+
+    /**
+     * Mostrar mensaje de confirmacion
+     *
+     * @param title
+     * @param content
+     * @return
+     */
+    public ButtonType showDialog(String title, String content) {
+        // EFECTO
+        BoxBlur blur = new BoxBlur(5, 5, 5);
+        mainContainer.setEffect(blur);
+
+        // ALERTA
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(content);
+        alert.setTitle(title);
+
+        // ESPERAR Y REINICIAR
+        alert.showAndWait();
+        mainContainer.setEffect(null);
+        return alert.getResult();
+    }
+
+    /**
+     * Leer archivo File a String
+     *
+     * @param file
+     * @return
+     */
     private String readFile(File file) {
         // BUFFER
         StringBuilder stringBuffer = new StringBuilder();
         BufferedReader bufferedReader = null;
 
         try {
-            // leer
+            // LEER
             bufferedReader = new BufferedReader(new FileReader(file));
             String text;
             while ((text = bufferedReader.readLine()) != null) {
@@ -63,42 +179,25 @@ public class Primary {
         return stringBuffer.toString();
     }
 
-    @FXML
-    private void saveFileAs() {
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Archivos FCA (*.fca)", "*.fca");
-        fileChooser.getExtensionFilters().add(extFilter);
-        File file = fileChooser.showSaveDialog(new Stage());
-
-        if (file != null) {
-            Tab currentTab = tabs.getTabs().get(selectedEditor);
-            currentTab.setText(file.getName().replace(Character.toString(dotSymbol), ""));
-            currentTab.setId(file.toString());
-
-            saveFileOnPath(file.toString());
-        }
-    }
-
-    @FXML
-    private void saveFile() {
-        String path = tabs.getTabs().get(selectedEditor).getId();
-        if (path == null) {
-            saveFileAs();
-        } else {
-            saveFileOnPath(path);
-        }
-    }
-
+    /**
+     * Guardar archivo actual en ruta
+     *
+     * @param path
+     */
     @FXML
     private void saveFileOnPath(String path) {
-        Tab currentTab = tabs.getTabs().get(selectedEditor);
-        AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
-        TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+        // PESTAÑA Y EDITOR ACTUALES
+        Tab currentTab = getCurrentTab();
+        TextArea editor = getCurrentEditor();
 
+        // BUFFER
         BufferedWriter writer = null;
         try {
+            // GUARDAR
             writer = new BufferedWriter(new FileWriter(path));
-            writer.write(textArea.getText());
+            writer.write(editor.getText());
+
+            // BORRAR SIMBOLO DE GUARDADO
             currentTab.setText(currentTab.getText().replace(" " + dotSymbol, ""));
         } catch (IOException ex) {
             System.out.println(ex);
@@ -113,6 +212,46 @@ public class Primary {
         }
     }
 
+    /**
+     * Guardar archivo actual como
+     */
+    @FXML
+    private void saveFileAs() {
+        // FILE CHOOSER
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Archivos FCA (*.fca)", "*.fca");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(new Stage());
+
+        if (file != null) {
+            // CONFIGURAR PESTAÑA
+            Tab currentTab = getCurrentTab();
+            currentTab.setText(file.getName().replace(Character.toString(dotSymbol), ""));
+            currentTab.setId(file.toString());
+
+            // GUARDAR
+            saveFileOnPath(file.toString());
+        }
+    }
+
+    /**
+     * Guardar archivo actual
+     */
+    @FXML
+    private void saveFile() {
+        String path = getCurrentTab().getId();
+
+        // ES UN EDITOR VACIO
+        if (path == null) {
+            saveFileAs();
+        } else {
+            saveFileOnPath(path);
+        }
+    }
+
+    /**
+     * Abrir archivo
+     */
     @FXML
     private void openFile() {
         // ABRIR
@@ -124,55 +263,52 @@ public class Primary {
 
         // ASIGNAR A EDITOR ACTUAL
         if (file != null) {
-            Tab currentTab = tabs.getTabs().get(selectedEditor);
-            AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
-            TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+            Tab currentTab = getCurrentTab();
+            TextArea editor = getCurrentEditor();
 
+            // CONFIGURAR PESTAÑA Y EDITOR
             String content = readFile(file);
-            textArea.setText(content);
+            editor.setText(content);
             currentTab.setId(file.toString());
             currentTab.setText(file.getName().replaceAll(Character.toString(dotSymbol), ""));
         }
     }
 
+    /**
+     * Cerrar pestaña actual
+     */
     @FXML
     private void closeEditorTab() {
         if (tabs.getTabs().size() > 1) {
-            Tab currentTab = tabs.getTabs().get(selectedEditor);
-            if (currentTab.getText().charAt(currentTab.getText().length() - 1) != dotSymbol) {
-                tabs.getTabs().remove(selectedEditor);
-            } else {
+            // PESTAÑA ACTUAL
+            Tab currentTab = getCurrentTab();
+
+            // PREGUNTAR PRIMERO ANTES DE CERRAR
+            if (currentTab.getText().charAt(currentTab.getText().length() - 1) == dotSymbol) {
                 ButtonType confirm = showDialog("Guardar archivo", "No se han guardado los cambios de esta pestaña,\nes posible que todos los cambios podrian perderse.");
 
+                // GUARDAR ARCHIVO
                 if (confirm == ButtonType.OK) {
                     saveFile();
                 }
-
-                tabs.getTabs().remove(selectedEditor);
             }
+
+            // CERRAR
+            tabs.getTabs().remove(selectedEditor);
         }
     }
 
-    public ButtonType showDialog(String title, String content) {
-        // EFECTO
-        BoxBlur blur = new BoxBlur(5, 5, 5);
-        mainContainer.setEffect(blur);
-
-        // Alert
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText(content);
-        alert.setTitle(title);
-        alert.showAndWait();
-        mainContainer.setEffect(null);
-        return alert.getResult();
-    }
-
+    /**
+     * Agregar pestaña nueva
+     */
     @FXML
     private void addEditorTab() {
+        // PESTAÑA
         Tab newTab = new Tab();
         int size = tabs.getTabs().size();
         newTab.setText("Editor");
 
+        // CONTENEDOR
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.setMinHeight(0);
         anchorPane.setMinWidth(0);
@@ -180,6 +316,7 @@ public class Primary {
         anchorPane.setPrefWidth(650.0);
         anchorPane.setStyle("-fx-background-color: #37474F;-fx-background-radius:0 10 10 10;");
 
+        // CONTADOR DE LINEAS
         TextArea linesArea = new TextArea();
         linesArea.setMaxHeight(1.7976931348623157E308);
         linesArea.setLayoutX(5);
@@ -193,6 +330,7 @@ public class Primary {
         linesArea.setEditable(false);
         linesArea.setText("1");
 
+        // EDITOR
         TextArea textArea = new TextArea();
         textArea.setMaxHeight(1.7976931348623157E308);
         textArea.setPrefHeight(245.0);
@@ -203,21 +341,25 @@ public class Primary {
         textArea.setFont(Font.font("Fira Code SemiBold", 13));
         textArea.setId("");
 
+        // EVENTOS DEL EDITOR
         textArea.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable,
                     String oldValue, String newValue) {
 
+                // OBTENER NUMERO DE LINEAS
                 int lines = newValue.split("\n").length;
                 Double caretPosition = textArea.scrollTopProperty().get();
                 String newLines = "";
 
+                // AGREGAR A CONTADOR DE LINEAS
                 for (int i = 0; i < lines; i++) {
                     newLines += (i + 1) + "\n";
                 }
                 linesArea.setText(newLines);
                 linesArea.scrollTopProperty().setValue(caretPosition);
 
+                // AGREGAR SIMBOLO DE GUARDADO
                 if (!newTab.getText().isEmpty()) {
                     if (newTab.getText().charAt(newTab.getText().length() - 1) != dotSymbol) {
                         newTab.setText(newTab.getText() + " " + dotSymbol);
@@ -226,6 +368,7 @@ public class Primary {
             }
         });
 
+        // SINCRONIZAR SCROLL DE LINEAS Y EDITOR
         textArea.scrollTopProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
@@ -233,10 +376,12 @@ public class Primary {
             }
         });
 
+        // SELECCIONAR PESTAÑA
         newTab.setOnSelectionChanged(e -> {
             selectedEditor = tabs.getSelectionModel().getSelectedIndex();
         });
 
+        // AGREGAR ELEMENTOS
         anchorPane.getChildren().add(textArea);
         anchorPane.getChildren().add(linesArea);
         newTab.setContent(anchorPane);
@@ -246,57 +391,42 @@ public class Primary {
         textArea.requestFocus();
     }
 
+    /**
+     * Limpiar consola
+     */
     @FXML
     private void clear() {
         clearOutput(true);
     }
 
-    private void clearOutput(boolean isPlaceholder) {
-        Text placeholder = new Text("Salida de consola y errores.");
-        placeholder.setStyle("-fx-font-smoothing-type: lcd;-fx-fill: #fff;-fx-font-family: Fira Code;");
-        output.getChildren().clear();
-
-        if (isPlaceholder) {
-            output.getChildren().add(placeholder);
-        }
-    }
-
+    /**
+     * Compilar editor actual
+     */
     @FXML
     private void compile() {
+        // GUARDAR EL EDITOR PRIMERO
         saveFile();
 
+        // LIMPIAR REPORTES ANTERIORES
         Reports reports = Reports.getInstance();
         reports.cleanProps();
 
-        Tab currentTab = tabs.getTabs().get(selectedEditor);
-        AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
-        TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
+        // SELECCIONAR EDITOR
+        Tab currentTab = getCurrentTab();
+        TextArea editor = getCurrentEditor();
+
+        // LIMPIAR CONSOLA
         clearOutput(false);
 
         try {
-            FCAParser parser = new FCAParser(new FCAScanner(new StringReader(textArea.getText())));
+            // ANALIZADOR
+            FCAParser parser = new FCAParser(new FCAScanner(new StringReader(editor.getText())));
+            parser.setFilePath(currentTab.getText());
+
+            // ANALIZAR
             parser.parse();
         } catch (Exception ex) {
             System.out.println(ex);
         }
-    }
-
-    public PrintStream getConsole(boolean isErr) {
-        PrintStream out = new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                Text line = new Text("" + (char) (b & 0xFF));
-                line.setStyle("-fx-font-smoothing-type: lcd;-fx-fill:" + (isErr ? "#F44336;-fx-font-weight:bold;" : "#fff;") + "-fx-font-family: Fira Code;");
-                output.getChildren().add(line);
-            }
-        });
-        return out;
-    }
-
-    public void initialize() {
-        addEditorTab();
-        clearOutput(true);
-        System.setOut(getConsole(false));
-        System.setErr(getConsole(true));
     }
 }

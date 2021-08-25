@@ -18,11 +18,19 @@ public class BarGraph extends Graph {
     // GLOBALES
     String xaxisTitle, yaxisTitle;
 
+    /**
+     * Constructor
+     */
     public BarGraph() {
         xaxisTitle = "";
         yaxisTitle = "";
     }
 
+    /**
+     * Asignar asignar propiedad de grafica
+     *
+     * @param prop
+     */
     @Override
     public void setProp(Object[] prop) {
         if (prop[0] != null) {
@@ -51,6 +59,11 @@ public class BarGraph extends Graph {
         }
     }
 
+    /**
+     * Crear lista de datos de freechart
+     *
+     * @return
+     */
     private CategoryDataset createDataset() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -66,6 +79,11 @@ public class BarGraph extends Graph {
         return dataset;
     }
 
+    /**
+     * Generar imagen de grafica
+     *
+     * @param path
+     */
     @Override
     public void generateGraph(String path) {
         // DATASET

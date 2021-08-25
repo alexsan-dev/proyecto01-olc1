@@ -18,6 +18,9 @@ public class Reports {
     public static ArrayList<Graph> graphs;
     public static HashMap<String, Object> properties;
 
+    /**
+     * Reiniciar instancia
+     */
     public static void cleanProps() {
         properties = new HashMap<String, Object>();
         graphs = new ArrayList<Graph>();
@@ -26,6 +29,11 @@ public class Reports {
         path2 = "";
     }
 
+    /**
+     * Obtener instancia
+     *
+     * @return
+     */
     public static Reports getInstance() {
         if (reports == null) {
             cleanProps();
@@ -33,7 +41,15 @@ public class Reports {
         return reports;
     }
 
+    /**
+     * Asignar rutas de comparacion
+     *
+     * @param pathA
+     * @param pathB
+     * @param line
+     */
     public static void setComparePaths(String pathA, String pathB, int line) {
+        // NO ESTAN VACIA
         if (path1.equals("") && path2.equals("")) {
             path1 = pathA;
             path2 = pathB;
@@ -43,6 +59,12 @@ public class Reports {
         }
     }
 
+    /**
+     * Asignar propiedad global
+     *
+     * @param key
+     * @param value
+     */
     public static void setGlobalProp(String key, Object value) {
         if (value != null) {
             properties.put(key, value);
@@ -52,10 +74,22 @@ public class Reports {
         }
     }
 
+    /**
+     * Obtener variable global
+     *
+     * @param key
+     * @return
+     */
     public static Object getGlobalProp(String key) {
         return properties.getOrDefault(key, null);
     }
 
+    /**
+     * Agregar grafica
+     *
+     * @param graph
+     * @param title
+     */
     public static void addGraph(Graph graph, String title) {
         if (title != null) {
             graphs.add(graph);
@@ -65,6 +99,9 @@ public class Reports {
         }
     }
 
+    /**
+     * Generar imagenes de todas las graficas
+     */
     public static void generateGraphs() {
         Platform.runLater(new Runnable() {
             @Override

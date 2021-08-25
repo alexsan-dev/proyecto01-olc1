@@ -17,6 +17,11 @@ public class PieGraph extends Graph {
     public PieGraph() {
     }
 
+    /**
+     * Crear dataset de freechart
+     *
+     * @return
+     */
     private PieDataset createDataset() {
         DefaultPieDataset dataset = new DefaultPieDataset();
 
@@ -32,6 +37,11 @@ public class PieGraph extends Graph {
         return dataset;
     }
 
+    /**
+     * Generar imagen de grafica
+     *
+     * @param path
+     */
     @Override
     public void generateGraph(String path) {
         // DATASET
