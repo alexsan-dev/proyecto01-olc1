@@ -3,12 +3,12 @@
     Author     : alex
 */
 
-.tab-pane>*.tab-header-area>*.tab-header-background{
+.tab-pane>*.tab-header-area>*.tab-header-background {
     -fx-background-color: #CFD8DC;
     -fx-background-radius: 5 5 0 0;
 }
 
-.tab-pane>*.tab-header-area{
+.tab-pane>*.tab-header-area {
     -fx-background-radius: 10;
 }
 
@@ -47,29 +47,51 @@
     -fx-font-family: "Montserrat";
 }
 
-.closeBtn .text{
+.closeBtn .text {
     -fx-font-size: 13px;
     -fx-font-family: "Montserrat";
 }
 
-.text-area *.content {
-    -fx-background-color:#37474F;
+.textflow {
+    -fx-background-color: #263238;
+    -fx-background-radius: 10;
     -fx-padding: 15;
 }
 
-.line-area *.content{
-    -fx-background-color:#37474F;
+.text-area {
+    -fx-focus-color: transparent;
+    -fx-text-box-border: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.text-area *.content {
+    -fx-background-color: #37474F;
+    -fx-padding: 15;
+}
+
+.line-area {
+    -fx-focus-color: transparent;
+    -fx-text-box-border: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: #ccc;
+    -fx-border-width: 0 0.5 0 0;
+}
+
+.line-area *.content {
+    -fx-background-color: #37474F;
     -fx-padding: 15 8 15 0;
 }
 
-.line-area *.text{
+.line-area *.text {
     -fx-text-alignment: right;
 }
 
 .line-area .scroll-bar:vertical {
     -fx-pref-width: 1;
     -fx-opacity: 0;
+    -fx-background-color: transparent;
 }
+
 .line-area .scroll-bar:horizontal {
     -fx-pref-height: 1;
     -fx-opacity: 0;
@@ -77,9 +99,4 @@
 
 .jfx-tab-pane *.headers-region>*.tab>*.jfx-rippler {
     -jfx-rippler-fill: #fff;
-}
-
-.output-console *.content {
-    -fx-background-color:#263238;
-    -fx-background-radius:10;
 }

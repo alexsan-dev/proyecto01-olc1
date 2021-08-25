@@ -29,7 +29,7 @@ GenerarReporteEstadistico {
     }
 
     GraficaLineas {
-        titulo: titleline;
+        titulo: titleline
         archivo: "Su mecha";
     }
 

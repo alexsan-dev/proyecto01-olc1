@@ -67,6 +67,6 @@ COMMENT=##.*[\n\r]
 \r  {}
 
 . {
-    System.out.println("Error lexico: "+yytext()+
-    ", en la linea: "+yyline+", en la columna: "+yycolumn);
+    System.out.println("\nError lexico en la linea " + yyline +
+        " columna " + yycolumn + " componente: " + yytext() + ".\n");
 }

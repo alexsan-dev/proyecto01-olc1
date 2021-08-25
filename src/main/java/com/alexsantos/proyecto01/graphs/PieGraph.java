@@ -26,7 +26,7 @@ public class PieGraph extends Graph {
                 dataset.setValue(xaxis.get(i), values.get(i));
             }
         } else {
-            System.out.println("Error faltan valores en el eje X en grafica de pie " + title);
+            System.err.println("\nError faltan valores en el eje X en grafica de pie " + title + "\n");
         }
 
         return dataset;
@@ -51,7 +51,7 @@ public class PieGraph extends Graph {
             File file = new File(path + "piechart_" + title + ".jpeg");
             ChartUtils.saveChartAsJPEG(file, chart, 600, 400);
         } catch (IOException ex) {
-            System.out.println(ex);
+            System.err.println("\n" + ex + "\n");
         }
     }
 }

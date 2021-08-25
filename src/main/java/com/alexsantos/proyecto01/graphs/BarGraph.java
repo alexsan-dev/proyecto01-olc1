@@ -37,17 +37,17 @@ public class BarGraph extends Graph {
                 if (xaxisTitle.isEmpty()) {
                     xaxisTitle = (String) prop[0];
                 } else {
-                    System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje X.");
+                    System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el titulo del Eje X.\n");
                 }
             } else if (key.equals("yaxisTitle")) {
                 if (yaxisTitle.isEmpty()) {
                     yaxisTitle = (String) prop[0];
                 } else {
-                    System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje Y.");
+                    System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el titulo del Eje Y.\n");
                 }
             }
         } else {
-            System.out.println("Error valor nulo en linea " + prop[2]);
+            System.err.println("\nError valor nulo en linea " + prop[2] + "\n");
         }
     }
 
@@ -60,7 +60,7 @@ public class BarGraph extends Graph {
                 dataset.addValue(values.get(i), xaxis.get(i), "");
             }
         } else {
-            System.out.println("Error faltan valores en el eje X en grafica de barras " + title);
+            System.err.println("\nError faltan valores en el eje X en grafica de barras " + title + "\n");
         }
 
         return dataset;

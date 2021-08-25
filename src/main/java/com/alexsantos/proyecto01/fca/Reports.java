@@ -4,6 +4,7 @@ import com.alexsantos.proyecto01.graphs.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.application.Platform;
 
 /**
  *
@@ -38,7 +39,7 @@ public class Reports {
             path2 = pathB;
             System.out.println("Comparando proyectos " + path1 + " y " + path2);
         } else {
-            System.out.println("Error en linea: " + line + " ya se ejecuto COMPARE una vez.");
+            System.err.println("\nError en linea: " + line + " ya se ejecuto COMPARE una vez.\n");
         }
     }
 
@@ -47,7 +48,7 @@ public class Reports {
             properties.put(key, value);
             System.out.println("Declarando variable " + key);
         } else {
-            System.out.println("Error null en " + key);
+            System.err.println("\nError valor nulo en " + key + "\n");
         }
     }
 
@@ -60,12 +61,13 @@ public class Reports {
             graphs.add(graph);
             System.out.println("Agregando grafica de " + title + ": " + graph.title);
         } else {
-            System.out.println("Error titulo vacio");
+            System.err.println("\nError titulo vacio\n");
         }
     }
 
     public static void generateGraphs() {
-        Thread thread = new Thread() {
+        Platform.runLater(new Runnable() {
+            @Override
             public void run() {
                 // CREAR CARPETA SI NO EXISTE
                 String path = "./report/assets/";
@@ -82,7 +84,6 @@ public class Reports {
 
                 System.out.println("Fin de analisis lexico");
             }
-        };
-        thread.start();
+        });
     }
 }

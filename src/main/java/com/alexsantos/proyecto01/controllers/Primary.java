@@ -17,6 +17,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -28,7 +30,7 @@ public class Primary {
     @FXML
     private JFXTabPane tabs;
     @FXML
-    private TextArea output;
+    private TextFlow output;
     @FXML
     private StackPane mainPane;
     @FXML
@@ -176,16 +178,16 @@ public class Primary {
         anchorPane.setMinWidth(0);
         anchorPane.setPrefHeight(219.0);
         anchorPane.setPrefWidth(650.0);
-        anchorPane.setStyle("-fx-background-color: #37474F;-fx-background-radius: 10;");
+        anchorPane.setStyle("-fx-background-color: #37474F;-fx-background-radius:0 10 10 10;");
 
         TextArea linesArea = new TextArea();
         linesArea.setMaxHeight(1.7976931348623157E308);
         linesArea.setLayoutX(5);
         linesArea.setPrefHeight(245.0);
-        linesArea.setPrefWidth(45.0);
+        linesArea.setPrefWidth(37.0);
         linesArea.setMinWidth(0);
         linesArea.setWrapText(true);
-        linesArea.setStyle("-fx-text-fill: #ddd;");
+        linesArea.setStyle("-fx-text-fill: #ccc;");
         linesArea.getStyleClass().add("line-area");
         linesArea.setFont(Font.font("Fira Code SemiBold", 13));
         linesArea.setEditable(false);
@@ -194,8 +196,8 @@ public class Primary {
         TextArea textArea = new TextArea();
         textArea.setMaxHeight(1.7976931348623157E308);
         textArea.setPrefHeight(245.0);
-        textArea.setPrefWidth(595.0);
-        textArea.setLayoutX(50);
+        textArea.setPrefWidth(565.0);
+        textArea.setLayoutX(42);
         textArea.setPromptText("Escribe tu codigo aqui.");
         textArea.setStyle("-fx-text-fill: #fff;");
         textArea.setFont(Font.font("Fira Code SemiBold", 13));
@@ -246,7 +248,17 @@ public class Primary {
 
     @FXML
     private void clear() {
-        output.setText("");
+        clearOutput(true);
+    }
+
+    private void clearOutput(boolean isPlaceholder) {
+        Text placeholder = new Text("Salida de consola y errores.");
+        placeholder.setStyle("-fx-font-smoothing-type: lcd;-fx-fill: #fff;-fx-font-family: Fira Code;");
+        output.getChildren().clear();
+
+        if (isPlaceholder) {
+            output.getChildren().add(placeholder);
+        }
     }
 
     @FXML
@@ -259,7 +271,7 @@ public class Primary {
         Tab currentTab = tabs.getTabs().get(selectedEditor);
         AnchorPane anchorPane = (AnchorPane) currentTab.getContent();
         TextArea textArea = (TextArea) anchorPane.getChildren().get(0);
-        clear();
+        clearOutput(false);
 
         try {
             FCAParser parser = new FCAParser(new FCAScanner(new StringReader(textArea.getText())));
@@ -269,16 +281,22 @@ public class Primary {
         }
     }
 
-    public void initialize() {
-        addEditorTab();
-
+    public PrintStream getConsole(boolean isErr) {
         PrintStream out = new PrintStream(new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                output.appendText("" + (char) (b & 0xFF));
+                Text line = new Text("" + (char) (b & 0xFF));
+                line.setStyle("-fx-font-smoothing-type: lcd;-fx-fill:" + (isErr ? "#F44336;-fx-font-weight:bold;" : "#fff;") + "-fx-font-family: Fira Code;");
+                output.getChildren().add(line);
             }
         });
+        return out;
+    }
 
-        System.setOut(out);
+    public void initialize() {
+        addEditorTab();
+        clearOutput(true);
+        System.setOut(getConsole(false));
+        System.setErr(getConsole(true));
     }
 }

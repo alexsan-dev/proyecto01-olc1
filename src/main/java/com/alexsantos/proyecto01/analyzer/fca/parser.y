@@ -9,15 +9,14 @@ import com.alexsantos.proyecto01.fca.Reports;
 /* ERRORES */
 parser code {:
     public void syntax_error(Symbol s){
-        System.out.println("Error sintactico en la linea " + s.left +
-        " Columna " + s.right + ". Componente: " + s.value + ".");
-
+        System.err.println("\nError sintactico en la linea " + s.right +
+        " columna " + s.left + " componente: " + s.value + ".\n");
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-        System.out.println("Error sintactico irrecuperable en la linea " +
-        s.left + " Columna " + s.right + ". Componente: " + s.value +
-        " no reconocido.");
+        System.err.println("\nError sintactico irrecuperable en la linea " +
+        s.right + " columna " + s.left + " componente: " + s.value +
+        " no reconocido.\n");
     }
 :}
 
@@ -146,7 +145,7 @@ FUNCTION ::= BARGRAPH | PIEGRAPH | LINEGRAPH | COMPARE
 COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2
 closeparenthesis semicolom {:
     Reports reports = Reports.getInstance();
-    reports.setComparePaths(Tools.trimStr(path1), Tools.trimStr(path2), idleft);
+    reports.setComparePaths(Tools.trimStr(path1), Tools.trimStr(path2), idright);
 :} | error openparenthesis {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -167,11 +166,11 @@ DECLARATION ::= strtype id:idstr equals strtext:text {:
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* PRODUCCIONES DE GRAFICAS EN GENERAL */
 GRAPHPROP ::= GRAPHTITLE:title {:
-    RESULT = new Object[] {title, "title", titleleft};
+    RESULT = new Object[] {title, "title", titleright};
 :} | GRAPHXAXIS:list {:
-    RESULT = new Object[] {list, "xaxis", listleft};
+    RESULT = new Object[] {list, "xaxis", listright};
 :} | GRAPHVALUES:list {:
-    RESULT = new Object[] {list, "values", listleft};
+    RESULT = new Object[] {list, "values", listright};
 :};
 
 GRAPHTITLE ::= title colom strtext:text {:
@@ -181,7 +180,7 @@ GRAPHTITLE ::= title colom strtext:text {:
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
-        RESULT = "";
+        RESULT = null;
 :};
 
 GRAPHXAXIS ::= xaxis colom opensquarebracket
@@ -214,9 +213,9 @@ LINEGRAPHPROPS ::= LINEGRAPHPROPS:graph LINEGRAPHPROP:prop semicolom {:
 :};
 
 LINEGRAPHPROP ::= GRAPHTITLE:text {:
-    RESULT = new Object[] {text, "title", textleft};
+    RESULT = new Object[] {text, "title", textright};
 :} | LINEGRAPHFILE:text {:
-    RESULT = new Object[] {text, "file", textleft};
+    RESULT = new Object[] {text, "file", textright};
 :};
 
 LINEGRAPHFILE ::= file colom strtext:text {:
@@ -226,7 +225,7 @@ LINEGRAPHFILE ::= file colom strtext:text {:
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
-        RESULT = "";
+        RESULT = null;
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -270,9 +269,9 @@ BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:
 BARGRAPHPROP ::= GRAPHPROP:prop {:
     RESULT = prop;
 :} | BARGRAPHPTITLEX:prop {:
-    RESULT = new Object[] {prop, "xaxisTitle", propleft};
+    RESULT = new Object[] {prop, "xaxisTitle", propright};
 :} | BARGRAPHPTITLEY:prop {:
-    RESULT = new Object[] {prop, "yaxisTitle", propleft};
+    RESULT = new Object[] {prop, "yaxisTitle", propright};
 :};
 
 BARGRAPHPTITLEX ::= bgtitlex colom strtext:text {:
@@ -282,7 +281,7 @@ BARGRAPHPTITLEX ::= bgtitlex colom strtext:text {:
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
-        RESULT = "";
+        RESULT = null;
 :};
 
 BARGRAPHPTITLEY ::= bgtitley colom strtext:text {:
@@ -292,5 +291,5 @@ BARGRAPHPTITLEY ::= bgtitley colom strtext:text {:
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
-        RESULT = "";
+        RESULT = null;
 :};

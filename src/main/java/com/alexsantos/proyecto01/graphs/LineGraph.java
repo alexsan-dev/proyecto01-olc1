@@ -26,11 +26,11 @@ public class LineGraph extends Graph {
                 if (file.isEmpty()) {
                     file = (String) prop[0];
                 } else {
-                    System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo del Eje X.");
+                    System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el titulo del Eje X.\n");
                 }
             }
         } else {
-            System.out.println("Error valor nulo en linea " + prop[2]);
+            System.err.println("\nError valor nulo en linea " + prop[2] + "\n");
         }
     }
 

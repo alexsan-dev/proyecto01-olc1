@@ -34,28 +34,28 @@ public class Graph {
                     if (title.isEmpty()) {
                         title = (String) prop[0];
                     } else {
-                        System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el titulo.");
+                        System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el titulo.\n");
                     }
                     break;
                 case "xaxis":
                     if (xaxis.isEmpty()) {
                         xaxis = (ArrayList<String>) prop[0];
                     } else {
-                        System.out.println("Error en linea " + prop[2] + " ya se asigno una vez el eje X.");
+                        System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el eje X.\n");
                     }
                     break;
                 case "values":
                     if (values.isEmpty()) {
                         values = (ArrayList<Double>) prop[0];
                     } else {
-                        System.out.println("Error en linea " + prop[2] + " ya se asigno una vez los valores.");
+                        System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez los valores.\n");
                     }
                     break;
                 default:
                     break;
             }
         } else {
-            System.out.println("Error valor nulo en linea " + prop[2]);
+            System.err.println("\nError valor nulo en linea " + prop[2] + "\n");
         }
     }
 }
