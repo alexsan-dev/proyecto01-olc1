@@ -21,6 +21,7 @@ GenerarReporteEstadistico {
         titulox: titlex;
         tituloy: "Titulo eje Y";
     }
+	@
 
     GraficaPie {
         titulo: titlepie;
@@ -30,8 +31,8 @@ GenerarReporteEstadistico {
 
     GraficaLineas {
         titulo: titleline
-        archivo: "Su mecha";
+        archivo: "projectpaht1";
     }
-
-    compare("Su mecha", "su makina");
+    
+    compare("/path1", "/path2");
 }
