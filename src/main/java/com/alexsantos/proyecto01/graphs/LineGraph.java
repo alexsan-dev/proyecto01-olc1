@@ -1,5 +1,8 @@
 package com.alexsantos.proyecto01.graphs;
 
+import com.alexsantos.proyecto01.analyzer.comparator.FilePoints;
+import java.util.HashMap;
+
 /**
  *
  * @author alex
@@ -43,6 +46,6 @@ public class LineGraph extends Graph {
     }
 
     @Override
-    public void generateGraph(String path) {
+    public void generateGraph(String name, HashMap<String, FilePoints> points, float generalPoints) {
     }
 }

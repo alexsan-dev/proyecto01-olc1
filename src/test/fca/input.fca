@@ -21,7 +21,6 @@ GenerarReporteEstadistico {
         titulox: titlex;
         tituloy: "Titulo eje Y";
     }
-	@
 
     GraficaPie {
         titulo: titlepie;
@@ -30,9 +29,10 @@ GenerarReporteEstadistico {
     }
 
     GraficaLineas {
-        titulo: titleline
+        titulo: titleline;
         archivo: "projectpaht1";
     }
-    
-    compare("/path1", "/path2");
+   
+    compare("/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/fca/projects/project1", 
+	"/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/fca/projects/project2");
 }

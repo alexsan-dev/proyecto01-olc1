@@ -1,10 +1,11 @@
 package com.alexsantos.proyecto01.fca;
 
+import com.alexsantos.proyecto01.analyzer.comparator.Compare;
+import com.alexsantos.proyecto01.analyzer.comparator.FilePoints;
 import com.alexsantos.proyecto01.graphs.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javafx.application.Platform;
 
 /**
  *
@@ -51,8 +52,8 @@ public class Reports {
     public static void setComparePaths(String pathA, String pathB, int line) {
         // NO ESTAN VACIA
         if (path1.equals("") && path2.equals("")) {
-            path1 = pathA;
-            path2 = pathB;
+            path1 = pathA.charAt(pathA.length() - 1) == '/' ? pathA : pathA + "/";
+            path2 = pathB.charAt(pathB.length() - 1) == '/' ? pathB : pathB + "/";
             System.out.println("Comparando proyectos " + path1 + " y " + path2);
         } else {
             System.err.println("\nError en linea: " + line + " ya se ejecuto COMPARE una vez.\n");
@@ -103,24 +104,30 @@ public class Reports {
      * Generar imagenes de todas las graficas
      */
     public static void generateGraphs() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                // CREAR CARPETA SI NO EXISTE
-                String path = "./report/assets/";
-                File projectDir = new File(path);
-                if (!projectDir.exists()) {
-                    projectDir.mkdirs();
-                }
+        // COMPARE
+        HashMap<String, FilePoints> points = null;
+        float generalPoints = 0;
 
-                // GRAFICAR
-                System.out.println("Generando todas las graficas");
-                for (int i = 0; i < graphs.size(); i++) {
-                    graphs.get(i).generateGraph(path);
-                }
+        if (path1.length() > 0 && path2.length() > 0) {
+            Compare compare = new Compare(path1, path2);
+            points = compare.getRange();
+            generalPoints = compare.getGeneralPoints(points);
+        }
 
-                System.out.println("Fin de analisis lexico");
-            }
-        });
+        // CREAR CARPETA SI NO EXISTE
+        String path = "./report/assets/";
+        File projectDir = new File(path);
+        if (!projectDir.exists()) {
+            projectDir.mkdirs();
+        }
+
+        // GRAFICAR
+        System.out.println("Generando todas las graficas");
+
+        for (int i = 0; i < graphs.size(); i++) {
+            graphs.get(i).generateGraph(path, points, generalPoints);
+        }
+
+        System.out.println("Fin de analisis lexico");
     }
 }

@@ -54,6 +54,11 @@
                     <symbolsName>sym</symbolsName>
                     <cupDefinition>${project.build.sourceDirectory}/com/alexsantos/proyecto01/analyzer/fca/parser.y</cupDefinition>
                     <outputDirectory>${project.build.sourceDirectory}</outputDirectory>
+
+                    <className>JSParser</className>
+                    <symbolsName>sym</symbolsName>
+                    <cupDefinition>${project.build.sourceDirectory}/com/alexsantos/proyecto01/analyzer/javascript/parser.y</cupDefinition>
+                    <outputDirectory>${project.build.sourceDirectory}</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -68,6 +73,7 @@
                         <configuration>
                             <outputDirectory>${project.build.sourceDirectory}</outputDirectory>
                             <lexDefinitions>
+                                <lexDefinition>${project.build.sourceDirectory}/com/alexsantos/proyecto01/analyzer/javascript/scanner.lex</lexDefinition>
                                 <lexDefinition>${project.build.sourceDirectory}/com/alexsantos/proyecto01/analyzer/fca/scanner.lex</lexDefinition>
                             </lexDefinitions>
                         </configuration>

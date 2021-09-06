@@ -1,6 +1,8 @@
 package com.alexsantos.proyecto01.graphs;
 
+import com.alexsantos.proyecto01.analyzer.comparator.FilePoints;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -22,7 +24,7 @@ public class Graph {
         values = new ArrayList<>();
     }
 
-    public void generateGraph(String name) {
+    public void generateGraph(String name, HashMap<String, FilePoints> points, float generalPoints) {
 
     }
 

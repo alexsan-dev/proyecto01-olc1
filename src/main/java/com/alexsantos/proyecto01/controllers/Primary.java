@@ -39,7 +39,7 @@ public class Primary {
     private VBox mainContainer;
 
     /**
-     *
+     * Iniciar vista
      */
     public void initialize() {
         // INICIAR Y LIMPIAR

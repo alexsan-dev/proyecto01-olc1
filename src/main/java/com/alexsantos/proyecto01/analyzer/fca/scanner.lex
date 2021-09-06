@@ -36,6 +36,7 @@ COMMENT=##.*[\n\r]
 ")" {return new Symbol(sym.closeparenthesis,yycolumn,yyline,yytext());}
 "[" {return new Symbol(sym.opensquarebracket,yycolumn,yyline,yytext());}
 "]" {return new Symbol(sym.closesquarebracket,yycolumn,yyline,yytext());}
+"$" {return new Symbol(sym.dollar,yycolumn,yyline,yytext());}
 
 "generarreporteestadistico" {return new Symbol(sym.main,yycolumn,yyline,yytext());}
 "definirglobales" {return new Symbol(sym.setglobals,yycolumn,yyline,yytext());}
@@ -43,6 +44,7 @@ COMMENT=##.*[\n\r]
 "graficabarras" {return new Symbol(sym.bargraph,yycolumn,yyline,yytext());}
 "graficapie" {return new Symbol(sym.piegraph,yycolumn,yyline,yytext());}
 "compare" {return new Symbol(sym.compare,yycolumn,yyline,yytext());}
+"puntajegeneral" {return new Symbol(sym.genPoints,yycolumn,yyline,yytext());}
 
 "titulox" {return new Symbol(sym.bgtitlex,yycolumn,yyline,yytext());}
 "tituloy" {return new Symbol(sym.bgtitley,yycolumn,yyline,yytext());}
