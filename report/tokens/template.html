@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link href='https://fonts.googleapis.com/css?family=Nunito' rel='stylesheet'>
+        <title>Reporte de tokens</title>
+        <style>
+            *{
+                font-family: 'Montserrat';
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            main {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: calc(100% - 40px);
+                height: calc(100vh - 40px);
+                max-width: 1300px;
+                max-height: 560px;
+                background: rgba(0,0,0,.1);
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+            }
+
+            table{
+                border-spacing: 0;
+            }
+
+            table > thead{
+                width:100%;
+            }
+
+            table > tbody{
+                display: block;
+                height: 100%;
+                max-height: 520px;
+                overflow: auto;
+                scrollbar-width: none; /* For Firefox */
+                -ms-overflow-style: none; /* For Internet Explorer and Edge */
+            }
+
+            table > tbody::-webkit-scrollbar {
+                width: 0px; /* For Chrome, Safari, and Opera */
+            }
+
+            thead, tbody tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+
+            table > tbody tr td:first-child,
+            table > thead tr td:first-child{
+                width: 170px;
+
+            }
+
+            table > tbody tr td:nth-child(3),
+            table > thead tr td:nth-child(3),
+            table > tbody tr td:nth-child(4),
+            table > thead tr td:nth-child(4){
+                width: 118px;
+            }
+
+
+            table > tbody tr td:nth-child(5),
+            table > thead tr td:nth-child(5){
+                width: 130px;
+
+            }
+
+            table tbody tr:nth-child(even){
+                background:#F8F0DF;
+            }
+
+            table tbody tr:nth-child(odd){
+                background:#FEFBF3;
+            }
+
+            table > thead > tr{
+                background: #79B4B7;
+                height: 30px;
+                color: #fff;
+                font-weight: bold;
+            }
+
+            table thead tr  td{
+                padding:10px 20px;
+                border-right: 1px solid #fff;
+
+            }
+
+            table tbody tr td{
+                padding: 10px 20px;
+                font-weight:500;
+                color: #5B5B5B;
+                border-right: 1px solid rgba(0,0,0,.2);
+            }
+
+            table > thead > tr > td:last-child,
+            table > tbody > tr > td:last-child{
+                border-right: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Lexema</td>
+                        <td>Token</td>
+                        <td>Linea</td>
+                        <td>Columna</td>
+                        <td>Archivo</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {table_content}
+                </tbody>
+            </table>
+        </main>
+    </body>
+</html>
