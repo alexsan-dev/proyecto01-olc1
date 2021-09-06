@@ -1,9 +1,7 @@
 package com.alexsantos.proyecto01.graphs;
 
-import com.alexsantos.proyecto01.analyzer.comparator.FilePoints;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -87,7 +85,7 @@ public class BarGraph extends Graph {
      * @param path
      */
     @Override
-    public void generateGraph(String path, HashMap<String, FilePoints> points, float generalPoints) {
+    public void generateGraph(String path) {
         // DATASET
         CategoryDataset dataset = createDataset();
 

@@ -45,9 +45,10 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="Reportes">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Errores" />
-                                <MenuItem mnemonicParsing="false" text="Estadistico" />
-                                <MenuItem mnemonicParsing="false" text="JSON" />
+                                <MenuItem mnemonicParsing="false" onAction="#genAnalytics" text="Estadistico" />
+                                <MenuItem mnemonicParsing="false" onAction="#genErrors" text="Errores" />
+                                <MenuItem mnemonicParsing="false" onAction="#genTokens" text="Tokens" />
+                                <MenuItem mnemonicParsing="false" onAction="#genJSON" text="JSON" />
                             </items>
                         </Menu>
                     </menus>
@@ -118,14 +119,14 @@
                                                 </VBox>
                                             </children>
                                         </HBox>
-                              <ScrollPane hbarPolicy="NEVER" style="-fx-background-color: #263238; -fx-background-radius: 10;">
-                                 <content>
-                                              <TextFlow fx:id="output" layoutX="5.0" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="276.0" prefWidth="315.0" styleClass="textflow" />
-                                 </content>
-                                 <padding>
-                                    <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                 </padding>
-                              </ScrollPane>
+                                        <ScrollPane hbarPolicy="NEVER" style="-fx-background-color: #263238; -fx-background-radius: 10;">
+                                            <content>
+                                                <TextFlow fx:id="output" layoutX="5.0" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="276.0" prefWidth="315.0" styleClass="textflow" />
+                                            </content>
+                                            <padding>
+                                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                            </padding>
+                                        </ScrollPane>
                                     </children>
                                     <padding>
                                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

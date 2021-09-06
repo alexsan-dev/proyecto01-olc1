@@ -39,12 +39,13 @@ COMMENT=##.*[\n\r]
 "$" {return new Symbol(sym.dollar,yycolumn,yyline,yytext());}
 
 "generarreporteestadistico" {return new Symbol(sym.main,yycolumn,yyline,yytext());}
+"puntajeespecifico" {return new Symbol(sym.filePoints,yycolumn,yyline,yytext());}
 "definirglobales" {return new Symbol(sym.setglobals,yycolumn,yyline,yytext());}
+"puntajegeneral" {return new Symbol(sym.genPoints,yycolumn,yyline,yytext());}
 "graficalineas" {return new Symbol(sym.linegraph,yycolumn,yyline,yytext());}
 "graficabarras" {return new Symbol(sym.bargraph,yycolumn,yyline,yytext());}
 "graficapie" {return new Symbol(sym.piegraph,yycolumn,yyline,yytext());}
 "compare" {return new Symbol(sym.compare,yycolumn,yyline,yytext());}
-"puntajegeneral" {return new Symbol(sym.genPoints,yycolumn,yyline,yytext());}
 
 "titulox" {return new Symbol(sym.bgtitlex,yycolumn,yyline,yytext());}
 "tituloy" {return new Symbol(sym.bgtitley,yycolumn,yyline,yytext());}

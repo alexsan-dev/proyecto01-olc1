@@ -6,30 +6,40 @@ import com.alexsantos.proyecto01.graphs.*;
 import com.alexsantos.proyecto01.utils.Tools;
 import com.alexsantos.proyecto01.fca.Reports;
 import com.alexsantos.proyecto01.analyzer.errors.*;
+import com.alexsantos.proyecto01.analyzer.tokens.*;
 
 /* GENERAL */
 parser code {:
     String filePath;
 
-    public void setFilePath(String path){
+    public void setFilePath (String path) {
         filePath = path;
     }
 
-    public void syntax_error(Symbol s){
+    public void syntax_error (Symbol s) {
         System.err.println("\nError sintactico en la linea " + s.right +
         " columna " + s.left + " componente: " + s.value + ".\n");
+
         ErrorHandler errorHandler = ErrorHandler.getInstance();
         errorHandler.add(s, filePath);
     }
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+    public void unrecovered_syntax_error (Symbol s) throws java.lang.Exception{
         System.err.println("\nError sintactico irrecuperable en la linea " +
         s.right + " columna " + s.left + " componente: " + s.value +
         " no reconocido.\n");
+
         ErrorHandler errorHandler = ErrorHandler.getInstance();
         errorHandler.add(s, filePath);
     }
 :}
+
+action code {:
+    public void addToken (String lex, String key, int line, int col) {
+        TokensHandler tokens = TokensHandler.getInstance();
+        tokens.add(parser.filePath, lex, key, line, col);
+    }
+:};
 
 /* TIPOS GENERALES */
 terminal String decimal,strtext,id;
@@ -37,7 +47,9 @@ terminal String decimal,strtext,id;
 /* FUNCIONES Y PALABRAS RESERVADAS */
 terminal strtype,doubletype;
 terminal main,compare,setglobals,
-bargraph,piegraph,linegraph;
+bargraph,piegraph,linegraph,filePoints;
+
+terminal dollar, genPoints;
 
 /* SIMBOLOS */
 terminal comma,equals,openbracket,
@@ -53,11 +65,12 @@ bgtitlex,bgtitley;
 non terminal START,MAIN,
 COMPARE,SETGLOBALS,DECLARATIONS,
 DECLARATION,FUNCTIONS,FUNCTION,
-BARGRAPH,PIEGRAPH,LINEGRAPH;
+BARGRAPH,PIEGRAPH,LINEGRAPH, GENPOINTS;
 
 /* NO TERMINALES GENERICAS */
 non terminal ArrayList<String> STRINGLIST;
 non terminal ArrayList<Double> DOUBLELIST;
+non terminal String[] FILEPOINTS;
 
 /* NO TERMINALES DE GRAFICAS EN GENERAL */
 non terminal String GRAPHTITLE;
@@ -73,7 +86,6 @@ non terminal String BARGRAPHPTITLEY;
 
 /* NO TERMINALES DE GRAFICA DE PIE */
 non terminal PieGraph PIEGRAPHPROPS;
-non terminal Object[] PIEGRAPHPROP;
 
 /* NO TERMINALES DE GRAFICA DE LINEA */
 non terminal LineGraph LINEGRAPHPROPS;
@@ -87,24 +99,25 @@ start with START;
 STRINGLIST ::= STRINGLIST:list comma strtext:text {:
     RESULT = list;
     RESULT.add(Tools.trimStr(text));
-:} |
-STRINGLIST:list comma id:text {:
+    addToken("string", text, textright, textleft);
+:} | STRINGLIST:list comma id:text {:
     RESULT = list;
     Reports reports = Reports.getInstance();
     if(reports.getGlobalProp(text) != null)
         RESULT.add((String) reports.getGlobalProp(text));
-:} |
-strtext:text {:
+    addToken("id", text, textright, textleft);
+:} | strtext:text {:
     ArrayList<String> newList = new ArrayList<String>();
     RESULT = newList;
     RESULT.add(Tools.trimStr(text));
-:} |
-id:text {:
+    addToken("string", text, textright, textleft);
+:} | id:text {:
     Reports reports = Reports.getInstance();
     ArrayList<String> newList = new ArrayList<String>();
     RESULT = newList;
     if(reports.getGlobalProp(text) != null)
         RESULT.add((String) reports.getGlobalProp(text));
+    addToken("string", text, textright, textleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -112,32 +125,49 @@ id:text {:
 DOUBLELIST ::= DOUBLELIST:list comma decimal:text {:
     RESULT = list;
     RESULT.add(Double.parseDouble(text));
-:} |
-DOUBLELIST:list comma id:text {:
+    addToken("double", text, textright, textleft);
+:} | DOUBLELIST:list comma id:text {:
     RESULT = list;
     Reports reports = Reports.getInstance();
     if(reports.getGlobalProp(text) != null)
         RESULT.add((Double) reports.getGlobalProp(text));
-:} |
-decimal:text {:
+
+    addToken("id", text, textright, textleft);
+:} | DOUBLELIST:list comma GENPOINTS:line {:
+    RESULT = list;
+    Reports reports = Reports.getInstance();
+    RESULT.add((Double) reports.genPoints);
+:} | DOUBLELIST:list comma FILEPOINTS:params {:
+    RESULT = list;
+    Reports reports = Reports.getInstance();
+    RESULT.add(reports.getFilePoints(params[0], params[1], params[2]));
+:} | decimal:text {:
     ArrayList<Double> newList = new ArrayList<Double>();
     RESULT = newList;
     RESULT.add(Double.parseDouble(text));
-:} |
-id:text {:
+    addToken("double", text, textright, textleft);
+:} | id:text {:
     Reports reports = Reports.getInstance();
     ArrayList<Double> newList = new ArrayList<Double>();
     RESULT = newList;
     if(reports.getGlobalProp(text) != null)
         RESULT.add((Double) reports.getGlobalProp(text));
+    addToken("id", text, textright, textleft);
+:} | GENPOINTS:line {:
+    Reports reports = Reports.getInstance();
+    ArrayList<Double> newList = new ArrayList<Double>();
+    RESULT = newList;
+    RESULT.add(reports.genPoints);
+:} | FILEPOINTS:params {:
+    Reports reports = Reports.getInstance();
+    ArrayList<Double> newList = new ArrayList<Double>();
+    RESULT = newList;
+    RESULT.add(reports.getFilePoints(params[0], params[1], params[2]));
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* INICIO */
-START ::= MAIN {:
-    Reports reports = Reports.getInstance();
-    reports.generateGraphs();
-:};
+START ::= MAIN {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* DECLARACION INICIAL */
@@ -156,7 +186,8 @@ FUNCTION ::= BARGRAPH | PIEGRAPH | LINEGRAPH | COMPARE
 COMPARE ::= compare:id openparenthesis strtext:path1 comma strtext:path2
 closeparenthesis semicolom {:
     Reports reports = Reports.getInstance();
-    reports.setComparePaths(Tools.trimStr(path1), Tools.trimStr(path2), idright);
+    reports.setComparePaths(Tools.trimStr(path1),Tools.trimStr(path2),idright);
+    addToken("compare", path1 +" , "+path2, idright, idleft);
 :} | error openparenthesis {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -169,9 +200,34 @@ DECLARATIONS ::= DECLARATIONS DECLARATION semicolom
 DECLARATION ::= strtype id:idstr equals strtext:text {:
     Reports reports = Reports.getInstance();
     reports.setGlobalProp(idstr, Tools.trimStr(text));
+    addToken("id", idstr, idstrright, idstrleft);
 :} | doubletype id:idstr equals decimal:text {:
     Reports reports = Reports.getInstance();
     reports.setGlobalProp(idstr, Double.parseDouble(text));
+    addToken("id", idstr, idstrright, idstrleft);
+:} | doubletype id:idstr equals GENPOINTS:text {:
+    Reports reports = Reports.getInstance();
+    reports.setGlobalProp(idstr, reports.genPoints);
+    addToken("id", idstr, idstrright, idstrleft);
+:} | doubletype id:idstr equals FILEPOINTS:params {:
+    Reports reports = Reports.getInstance();
+    reports.setGlobalProp(idstr,
+    reports.getFilePoints(params[0], params[1], params[2]));
+    addToken("id", idstr, idstrright, idstrleft);
+:};
+
+GENPOINTS ::= dollar:line openbracket genPoints closebracket {:
+    addToken("genPoints", "PuntajeGeneral", lineright, lineleft);
+:};
+
+FILEPOINTS ::= dollar openbracket filePoints:line
+comma strtext:path comma strtext:key comma strtext:id closebracket {:
+    String tPath = Tools.trimStr(path);
+    String tKey = Tools.trimStr(key);
+    String tId =Tools.trimStr(id);
+    String[] params = new String[] {tPath, tKey, tId};
+    RESULT = params;
+    addToken("filePoints", tPath + "," + tKey + "," + tId, lineright, lineleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -186,29 +242,35 @@ GRAPHPROP ::= GRAPHTITLE:title {:
 
 GRAPHTITLE ::= title colom strtext:text {:
     RESULT = Tools.trimStr(text);
+    addToken("title", text, textright, textleft);
 :} | title colom id:tId {:
     Reports reports = Reports.getInstance();
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
         RESULT = null;
+
+    addToken("id", tId, tIdright, tIdleft);
 :};
 
-GRAPHXAXIS ::= xaxis colom opensquarebracket
+GRAPHXAXIS ::= xaxis:line colom opensquarebracket
 STRINGLIST:list closesquarebracket {:
     RESULT = list;
+    addToken("xaxis", "ejex", lineright, lineleft);
 :};
 
-GRAPHVALUES ::= values colom opensquarebracket
+GRAPHVALUES ::= values:line colom opensquarebracket
 DOUBLELIST:list closesquarebracket {:
     RESULT = list;
+    addToken("values", "valores", lineright, lineleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* GRAFICAS DE LINEAS */
-LINEGRAPH ::= linegraph openbracket LINEGRAPHPROPS:graph closebracket {:
+LINEGRAPH ::= linegraph:line openbracket LINEGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.addGraph(graph, "lineas");
+    addToken("linegraph", "graficalineas", lineright, lineleft);
 :};
 
 LINEGRAPHPROPS ::= LINEGRAPHPROPS:graph LINEGRAPHPROP:prop semicolom {:
@@ -229,21 +291,26 @@ LINEGRAPHPROP ::= GRAPHTITLE:text {:
     RESULT = new Object[] {text, "file", textright};
 :};
 
-LINEGRAPHFILE ::= file colom strtext:text {:
+LINEGRAPHFILE ::= file:line colom strtext:text {:
     RESULT = Tools.trimStr(text);
-:} | file colom id:tId {:
+    addToken("file", "archivo", lineright, lineleft);
+    addToken("string", text , textright, textleft);
+:} | file:line colom id:tId {:
     Reports reports = Reports.getInstance();
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
         RESULT = null;
+    addToken("file", "archivo", lineright, lineleft);
+    addToken("id", tId , tIdright, tIdleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* GRAFICAS DE PIE */
-PIEGRAPH ::= piegraph openbracket PIEGRAPHPROPS:graph closebracket {:
+PIEGRAPH ::= piegraph:line openbracket PIEGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.addGraph(graph, "pie");
+    addToken("piegraph", "graficapie", lineright, lineleft);
 :};
 
 PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
@@ -260,9 +327,10 @@ PIEGRAPHPROPS ::= PIEGRAPHPROPS:graph GRAPHPROP:prop semicolom {:
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* GRAFICAS DE BARRAS */
-BARGRAPH ::= bargraph openbracket BARGRAPHPROPS:graph closebracket {:
+BARGRAPH ::= bargraph:line openbracket BARGRAPHPROPS:graph closebracket {:
     Reports reports = Reports.getInstance();
     reports.addGraph(graph, "barras");
+    addToken("bargraph", "graficabarras", lineright, lineleft);
 :};
 
 BARGRAPHPROPS ::= BARGRAPHPROPS:graph BARGRAPHPROP:prop semicolom {:
@@ -285,22 +353,32 @@ BARGRAPHPROP ::= GRAPHPROP:prop {:
     RESULT = new Object[] {prop, "yaxisTitle", propright};
 :};
 
-BARGRAPHPTITLEX ::= bgtitlex colom strtext:text {:
+BARGRAPHPTITLEX ::= bgtitlex:line colom strtext:text {:
     RESULT = Tools.trimStr(text);
-:} | bgtitlex colom id:tId {:
+    addToken("bgtitlex", "titulox", lineright, lineleft);
+    addToken("string", text, textright, textleft);
+:} | bgtitlex:line colom id:tId {:
     Reports reports = Reports.getInstance();
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
         RESULT = null;
+
+    addToken("bgtitlex", "titulox", lineright, lineleft);
+    addToken("id", tId, tIdright, tIdleft);
 :};
 
-BARGRAPHPTITLEY ::= bgtitley colom strtext:text {:
+BARGRAPHPTITLEY ::= bgtitley:line colom strtext:text {:
     RESULT = Tools.trimStr(text);
-:} | bgtitley colom id:tId {:
+    addToken("bgtitley", "tituloy", lineright, lineleft);
+    addToken("string", text, textright, textleft);
+:} | bgtitley:line colom id:tId {:
     Reports reports = Reports.getInstance();
     if(reports.getGlobalProp(tId) != null)
         RESULT = (String) reports.getGlobalProp(tId);
     else
         RESULT = null;
+
+    addToken("bgtitley", "tituloy", lineright, lineleft);
+    addToken("id", tId, tIdright, tIdleft);
 :};

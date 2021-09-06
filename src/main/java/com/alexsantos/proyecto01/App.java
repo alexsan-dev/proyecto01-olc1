@@ -1,5 +1,12 @@
 package com.alexsantos.proyecto01;
 
+/*
+import com.alexsantos.proyecto01.analyzer.javascript.JSParser;
+import com.alexsantos.proyecto01.analyzer.javascript.JSScanner;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+ */
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -58,12 +65,14 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
         // ANALYZADOR
-        /*try {
-            File file = new File("/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/javascript/input.js");
+        /* try {
+            File file = new File("/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/fca/projects/project2/file_2.js");
             JSParser parser = new JSParser(new JSScanner(new BufferedReader(new FileReader(file))));
+            parser.setFilePath("");
             parser.parse();
         } catch (Exception ex) {
-            System.err.println("Error: " + ex.getMessage());
+            System.err.println("Error en javascript ");
+            ex.printStackTrace();
         }*/
     }
 }

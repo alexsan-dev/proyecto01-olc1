@@ -1,7 +1,6 @@
 package com.alexsantos.proyecto01.fca;
 
-import com.alexsantos.proyecto01.analyzer.comparator.Compare;
-import com.alexsantos.proyecto01.analyzer.comparator.FilePoints;
+import com.alexsantos.proyecto01.analyzer.comparator.*;
 import com.alexsantos.proyecto01.graphs.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,19 +14,26 @@ public class Reports {
 
     // GLOBALES
     public static Reports reports;
+    public static double genPoints;
     public static String path1, path2;
     public static ArrayList<Graph> graphs;
+    public static ArrayList<String> project1Paths;
+    public static ArrayList<ElementCounter> elements;
+    public static HashMap<String, FilePoints> points;
     public static HashMap<String, Object> properties;
 
     /**
      * Reiniciar instancia
      */
     public static void cleanProps() {
+        points = new HashMap<String, FilePoints>();
         properties = new HashMap<String, Object>();
+        elements = new ArrayList<ElementCounter>();
         graphs = new ArrayList<Graph>();
         reports = new Reports();
         path1 = "";
         path2 = "";
+        genPoints = 0;
     }
 
     /**
@@ -55,8 +61,6 @@ public class Reports {
             path1 = pathA.charAt(pathA.length() - 1) == '/' ? pathA : pathA + "/";
             path2 = pathB.charAt(pathB.length() - 1) == '/' ? pathB : pathB + "/";
             System.out.println("Comparando proyectos " + path1 + " y " + path2);
-        } else {
-            System.err.println("\nError en linea: " + line + " ya se ejecuto COMPARE una vez.\n");
         }
     }
 
@@ -101,19 +105,103 @@ public class Reports {
     }
 
     /**
+     * Inicia el analisis de copias
+     */
+    public static void compare() {
+        // COMPARE
+        if (path1.length() > 0 && path2.length() > 0) {
+            Compare compare = new Compare(path1, path2);
+            project1Paths = compare.getPaths(path1);
+            points = compare.getRange();
+            genPoints = compare.getGeneralPoints(points);
+            elements = compare.getElements();
+        }
+    }
+
+    /**
+     * Obtener reporte JSON
+     */
+    public static void getJSONReport() {
+        JSONReport jsonReport = new JSONReport(project1Paths, genPoints, points);
+        jsonReport.getJSONFile();
+    }
+
+    /**
+     * Reporte de tokens
+     */
+    public static void getTokensReport() {
+        TokensReport report = new TokensReport();
+        report.generateReport();
+    }
+
+    /**
+     * Reporte de errores
+     */
+    public static void getErrsReport() {
+        ErrorsReport report = new ErrorsReport();
+        report.generateReport();
+    }
+
+    /**
+     * Reporte estadistico
+     */
+    public static void getAnalyticsReport() {
+        String series1 = path1.substring(0, path1.length() - 1);
+        series1 = series1.substring(series1.lastIndexOf("/") + 1);
+        String series2 = path2.substring(0, path2.length() - 1);
+        series2 = series2.substring(series2.lastIndexOf("/") + 1);
+
+        AnalyticsReport report = new AnalyticsReport(elements, series1, series2);
+        report.generateReport();
+    }
+
+    /**
+     * Obtener puntaje especifico
+     */
+    public static double getFilePoints(String path, String key, String id) {
+        double filePoints = 0;
+
+        // PUNTOS
+        if (points.size() > 0) {
+            FilePoints pathPoints = points.get(path);
+
+            String lowerKey = key.toLowerCase();
+
+            // CALCULAR PARA CLASES
+            if (lowerKey.equals("clase")) {
+                HashMap<String, Element> points = pathPoints.classPoints;
+                Element element = points.get(id);
+                if (element != null) {
+                    filePoints += element.points;
+                }
+            } else if (lowerKey.equals("metodo")) {
+                HashMap<String, Element> points = pathPoints.methodPoints;
+                Element element = points.get(id);
+                if (element != null) {
+                    filePoints += element.points;
+                }
+            } else if (lowerKey.equals("variable")) {
+                HashMap<String, Element> points = pathPoints.varPoints;
+                Element element = points.get(id);
+                if (element != null) {
+                    filePoints += element.points;
+                }
+            } else if (lowerKey.equals("comentario")) {
+                HashMap<String, Element> points = pathPoints.commentPoints;
+                Element element = points.get(id);
+                if (element != null) {
+                    filePoints += element.points;
+                }
+            }
+        }
+
+        return filePoints;
+    }
+
+    /**
      * Generar imagenes de todas las graficas
      */
     public static void generateGraphs() {
-        // COMPARE
-        HashMap<String, FilePoints> points = null;
-        float generalPoints = 0;
-
-        if (path1.length() > 0 && path2.length() > 0) {
-            Compare compare = new Compare(path1, path2);
-            points = compare.getRange();
-            generalPoints = compare.getGeneralPoints(points);
-        }
-
         // CREAR CARPETA SI NO EXISTE
         String path = "./report/assets/";
         File projectDir = new File(path);
@@ -125,7 +213,7 @@ public class Reports {
         System.out.println("Generando todas las graficas");
 
         for (int i = 0; i < graphs.size(); i++) {
-            graphs.get(i).generateGraph(path, points, generalPoints);
+            graphs.get(i).generateGraph(path);
         }
 
         System.out.println("Fin de analisis lexico");

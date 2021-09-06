@@ -34,8 +34,6 @@ COMMENT=\/\/.*[\n\r]
 "}" {return new Symbol(sym.closebracket,yycolumn,yyline,yytext());}
 "(" {return new Symbol(sym.openparenthesis,yycolumn,yyline,yytext());}
 ")" {return new Symbol(sym.closeparenthesis,yycolumn,yyline,yytext());}
-"[" {return new Symbol(sym.opensquarebracket,yycolumn,yyline,yytext());}
-"]" {return new Symbol(sym.closesquarebracket,yycolumn,yyline,yytext());}
 
 "+" {return new Symbol(sym.plus,yycolumn,yyline,yytext());}
 "++" {return new Symbol(sym.plusplus,yycolumn,yyline,yytext());}
@@ -84,10 +82,9 @@ COMMENT=\/\/.*[\n\r]
 {STRTEXT} {return new Symbol(sym.strtext,yyline,yycolumn, yytext());}
 {ID} {return new Symbol(sym.id,yycolumn,yyline,yytext());}
 
-{MULTICOMMENT} {return new Symbol(sym.cmt,yyline,yycolumn, yytext());}
+{MULTICOMMENT} {return new Symbol(sym.mcmt,yyline,yycolumn, yytext());}
 {WHITESPACE} {}
-{COMMENT} {return new Symbol(sym.mcmt,yyline,yycolumn, yytext());}
-"//" {}
+{COMMENT} {return new Symbol(sym.cmt,yyline,yycolumn, yytext());}
 
 \n  {}
 \r  {}

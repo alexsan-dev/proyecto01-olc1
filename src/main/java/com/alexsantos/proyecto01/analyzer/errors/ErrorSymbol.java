@@ -9,9 +9,9 @@ import java_cup.runtime.*;
 public class ErrorSymbol {
 
     // GLOBALES
-    int line, col;
-    Object lex;
-    String file;
+    public int line, col;
+    public Object lex;
+    public String file;
 
     /**
      * Constructor

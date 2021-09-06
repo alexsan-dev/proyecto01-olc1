@@ -274,6 +274,42 @@ public class Primary {
         }
     }
 
+    @FXML
+    /**
+     * Generar reporte json
+     */
+    private void genJSON() {
+        Reports reports = Reports.getInstance();
+        reports.getJSONReport();
+    }
+
+    @FXML
+    /**
+     * Generar reporte tokens
+     */
+    private void genTokens() {
+        Reports reports = Reports.getInstance();
+        reports.getTokensReport();
+    }
+
+    @FXML
+    /**
+     * Generar reporte errores
+     */
+    private void genErrors() {
+        Reports reports = Reports.getInstance();
+        reports.getErrsReport();
+    }
+
+    @FXML
+    /**
+     * Generar estadistico
+     */
+    private void genAnalytics() {
+        Reports reports = Reports.getInstance();
+        reports.getAnalyticsReport();
+    }
+
     /**
      * Cerrar pestaña actual
      */
@@ -425,8 +461,20 @@ public class Primary {
 
             // ANALIZAR
             parser.parse();
+
+            // COMPARAR
+            reports.compare();
+            clearOutput(false);
+
+            // ANALIZAR OTRA VEZ Y GRAFICAR
+            FCAParser parser2 = new FCAParser(new FCAScanner(new StringReader(editor.getText())));
+            parser2.setFilePath(currentTab.getText());
+            parser2.parse();
+
+            reports.generateGraphs();
         } catch (Exception ex) {
             System.out.println(ex);
+            ex.printStackTrace();
         }
     }
 }

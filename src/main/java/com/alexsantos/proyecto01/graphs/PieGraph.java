@@ -1,9 +1,7 @@
 package com.alexsantos.proyecto01.graphs;
 
-import com.alexsantos.proyecto01.analyzer.comparator.FilePoints;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -30,7 +28,7 @@ public class PieGraph extends Graph {
         // AGREGAR DATOS
         if (values.size() > 0 && xaxis.size() >= values.size()) {
             for (int i = 0; i < values.size(); i++) {
-                dataset.setValue(xaxis.get(i), values.get(i));
+                dataset.setValue(xaxis.get(i) + " = " + values.get(i), values.get(i));
             }
         } else {
             System.err.println("\nError faltan valores en el eje X en grafica de pie " + title + "\n");
@@ -45,7 +43,7 @@ public class PieGraph extends Graph {
      * @param path
      */
     @Override
-    public void generateGraph(String path, HashMap<String, FilePoints> points, float generalPoints) {
+    public void generateGraph(String path) {
         // DATASET
         PieDataset dataset = createDataset();
 

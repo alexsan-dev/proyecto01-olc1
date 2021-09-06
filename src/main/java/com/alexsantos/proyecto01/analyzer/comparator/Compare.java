@@ -19,22 +19,40 @@ import java.util.stream.Stream;
  */
 public class Compare {
 
-    String path1;
-    String path2;
-    ArrayList<String> project1Paths;
-    ArrayList<String> project2Paths;
+    // GLOBALES
+    public String path1;
+    public String path2;
+    public ArrayList<String> project1Paths;
+    public ArrayList<String> project2Paths;
+    private ArrayList<ElementCounter> elements;
 
     /**
-     * Constructor
+     * Comparar proyectos
+     *
+     * @param path1
+     * @param path2
      */
     public Compare(String path1, String path2) {
-        this.path1 = path1;
-        this.path2 = path2;
         project1Paths = new ArrayList<String>();
         project2Paths = new ArrayList<String>();
+        elements = new ArrayList<ElementCounter>();
+        this.path1 = path1;
+        this.path2 = path2;
     }
 
-    private void getPaths(String path, ArrayList<String> list) {
+    public ArrayList<ElementCounter> getElements() {
+        return elements;
+    }
+
+    /**
+     * Obtener todos los archivos de una carpeta
+     *
+     * @param path
+     * @param list
+     */
+    public ArrayList<String> getPaths(String path) {
+        ArrayList<String> list = new ArrayList<String>();
+
         // PROJECTO 1
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             // FILTRAR
@@ -47,67 +65,105 @@ public class Compare {
         } catch (IOException ex) {
             System.out.println(ex);
         }
+
+        return list;
     }
 
-    public float getGeneralPoints(HashMap<String, FilePoints> points) {
-        float generalPoints = 0;
-        float commentPoints = 0;
-        float varPoints = 0;
-        float methodPoints = 0;
-        float classPoints = 0;
-        int commentCount = 0;
+    /**
+     * Obtener puntaje general
+     *
+     * @param points
+     * @return
+     */
+    public double getGeneralPoints(HashMap<String, FilePoints> points) {
+        // PUNTOS
+        double generalPoints = 0;
+        double classPoints = 0;
+        double varPoints = 0;
+        double methodPoints = 0;
+        double commentPoints = 0;
+
+        int classCount = 0;
         int varCount = 0;
         int methodCount = 0;
-        int classCount = 0;
+        int commentCount = 0;
 
+        // ASIGNAR PUNTOS DE PROYECTO1
         for (int i = 0; i < project1Paths.size(); i++) {
             FilePoints fPoints = points.get(project1Paths.get(i));
-            commentPoints += fPoints.commentPoints;
-            varPoints += fPoints.varPoints;
-            methodPoints += fPoints.methodPoints;
-            classPoints += fPoints.classPoints;
-            commentCount += fPoints.commentCount;
-            varCount += fPoints.varCount;
-            methodCount += fPoints.methodCount;
-            classCount += fPoints.classCount;
+
+            // CALCULAR PUNTOS DE CLASES
+            for (Element entry : fPoints.classPoints.values()) {
+                classCount++;
+                classPoints += entry.points;
+            }
+
+            // CALCULAR PUNTOS DE VARIABLES
+            for (Element entry : fPoints.varPoints.values()) {
+                varCount++;
+                varPoints += entry.points;
+            }
+
+            // CALCULAR PUNTOS DE METODOS
+            for (Element entry : fPoints.methodPoints.values()) {
+                methodCount++;
+                methodPoints += entry.points;
+            }
+
+            // CALCULAR PUNTOS DE COMENTARIOS
+            for (Element entry : fPoints.commentPoints.values()) {
+                commentCount++;
+                commentPoints += entry.points;
+            }
         }
 
-        for (int i = 0; i < project2Paths.size(); i++) {
-            FilePoints fPoints = points.get(project2Paths.get(i));
-            commentPoints += fPoints.commentPoints;
-            varPoints += fPoints.varPoints;
-            methodPoints += fPoints.methodPoints;
-            classPoints += fPoints.classPoints;
-            commentCount += fPoints.commentCount;
-            varCount += fPoints.varCount;
-            methodCount += fPoints.methodCount;
-            classCount += fPoints.classCount;
-        }
+        // CALCULAR CRITERIOS DE PUNTAJE GENERAL
+        double genComments = (double) ((Double.compare(commentPoints, 0.6) > 0) ? ((commentCount / commentPoints) * 0.2) : 0);
+        double genVars = (double) ((Double.compare(varPoints, 0.6) > 0) ? ((varCount / varPoints) * 0.2) : 0);
+        double genMethods = (double) ((Double.compare(methodPoints, 0.6) > 0) ? ((methodCount / methodPoints) * 0.3) : 0);
+        double genClasses = (double) ((Double.compare(classPoints, 0.6) > 0) ? ((classCount / classPoints) * 0.3) : 0);
 
-        generalPoints = (float) (((commentCount / commentPoints) * 0.2) + ((varCount / varPoints) * 0.2) + ((methodCount / methodPoints) * 0.3) + ((classCount / commentPoints) * 0.3));
+        // CALCULAR PUNTAJE GENERAL
+        generalPoints = genComments + genVars + genMethods + genClasses;
         return generalPoints;
     }
 
+    /**
+     * Obtener Hash de puntos
+     *
+     * @return HashMap<String, FilePoints>
+     */
     public HashMap<String, FilePoints> getRange() {
         // PUNTAJE ESPECIFICO
         HashMap<String, FilePoints> points = new HashMap<String, FilePoints>();
 
         // LEER RUTAS
-        getPaths(path1, project1Paths);
-        getPaths(path2, project2Paths);
+        project1Paths = getPaths(path1);
+        project2Paths = getPaths(path2);
+
+        String prPath1 = path1.substring(0, path1.length() - 1);
+        String prPath2 = path2.substring(0, path2.length() - 1);
+
+        String proyectPath1 = prPath1.substring(prPath1.lastIndexOf("/") + 1);
+        String proyectPath2 = prPath2.substring(prPath2.lastIndexOf("/") + 1);
 
         // RECORRER
         for (int i = 0; i < project1Paths.size(); i++) {
+            // RUTA DEL MISMO ARCHIVO EN DOS PROYECTOS
             String path = project1Paths.get(i);
             String newPath1 = path1 + path;
             String newPath2 = path2 + path;
 
+            String parentPath1 = path1.substring(path1.lastIndexOf("/") + 1) + path;
+            String parentPath2 = path2.substring(path2.lastIndexOf("/") + 1) + path;
+
+            // ARCHIVOS
+            JSParser parser1 = null;
+            JSParser parser2 = null;
             File file1 = null;
             File file2 = null;
 
-            JSParser parser1 = null;
-            JSParser parser2 = null;
-
+            // GENERAR ARCHIVOS
             try {
                 file1 = new File(newPath1);
                 file2 = new File(newPath2);
@@ -116,7 +172,7 @@ public class Compare {
                 System.err.println("Error en projecto : " + ex.getMessage());
             }
 
-            // ANALIZAR
+            // CREAR PARSERS
             try {
                 // ARCHIVO 01
                 parser1 = new JSParser(new JSScanner(new BufferedReader(new FileReader(file1))));
@@ -126,154 +182,206 @@ public class Compare {
                 System.err.println("Error en archivos : " + ex.getMessage());
             }
 
-            parser1.setFilePath(newPath1);
+            // GENERAR PARSER
             try {
+                parser1.setFilePath(parentPath1);
                 parser1.parse();
-            } catch (Exception ex) {
-                System.err.println("Error en parser1 : " + ex.getMessage());
-            }
 
-            // ARCHIVO 02
-            parser2.setFilePath(newPath2);
-            try {
+                parser2.setFilePath(parentPath2);
                 parser2.parse();
             } catch (Exception ex) {
-                System.err.println("Error en parser2 : " + ex.getMessage());
+                System.err.println("Error en parsers : " + ex.getMessage());
             }
 
             // ELEMENTOS
-            HashMap<String, ArrayList<String>> values1 = parser1.getElements();
-            HashMap<String, ArrayList<String>> values2 = parser2.getElements();
+            HashMap<String, ArrayList<String>> elementsPr1 = parser1.getElements();
+            HashMap<String, ArrayList<String>> elementsPr2 = parser2.getElements();
 
             // CLASSES
-            ArrayList<String> classList1 = values1.get("class");
-            ArrayList<String> classList2 = values2.get("class");
+            HashMap<String, Element> classPoints = new HashMap<String, Element>();
+            ArrayList<String> classList1 = elementsPr1.get("class");
+            ArrayList<String> classList2 = elementsPr2.get("class");
 
-            float classPoints = 0;
-            int classCount = 0;
+            ElementCounter classCounter1 = new ElementCounter(proyectPath1, newPath1, "class", classList1.size());
+            ElementCounter classCounter2 = new ElementCounter(proyectPath2, newPath2, "class", classList2.size());
+            elements.add(classCounter1);
+            elements.add(classCounter2);
 
-            // REPITENCIA
+            ArrayList<String> classLines1 = elementsPr1.get("class-lines");
+            ArrayList<String> classLines2 = elementsPr2.get("class-lines");
+
+            ArrayList<String> classMethods1 = elementsPr1.get("class-method");
+            ArrayList<String> classMethods2 = elementsPr2.get("class-method");
+
+            // BUSCAR
             for (int cI = 0; cI < classList1.size(); cI++) {
-                boolean breakSearch = false;
+                // LOCAL
                 String currentId = classList1.get(cI);
-                int lines = Integer.parseInt(values1.get("class-lines").get(cI));
 
+                // NUMERO DE LINEAS
+                int lines = Integer.parseInt(classLines1.get(cI));
+
+                // BUSCAR EN SEGUNDO ARCHIVO
                 for (int cI2 = 0; cI2 < classList2.size(); cI2++) {
-                    int lines2 = Integer.parseInt(values2.get("class-lines").get(cI));
+                    // LINEAS DEL SEGUNDO
+                    int linesPr2 = Integer.parseInt(classLines2.get(cI));
 
-                    if (lines == lines2) {
-                        breakSearch = true;
-                        classPoints += 0.4;
-
-                    }
-
+                    // MISMO NUMERO DE ID
                     if (currentId.equals(classList2.get(cI2))) {
-                        breakSearch = true;
-                        classPoints += 0.2;
+                        double localPoints = 0.2;
 
+                        // BUSCAR REPITENCIA DE METODOS DE UNA CLASE
+                        for (int methodIndex = 0; methodIndex < classMethods1.size(); methodIndex++) {
+                            // ID METODO 1
+                            boolean breakMethodSearch = false;
+                            String methodId = classMethods1.get(methodIndex);
+
+                            if (methodId.contains(currentId)) {
+                                for (int method2Index = 0; method2Index < classMethods2.size(); method2Index++) {
+                                    // ID METODO 2
+                                    String methodId2 = classMethods2.get(method2Index);
+
+                                    // MISMOS IDS
+                                    if (methodId.equals(methodId2)) {
+                                        breakMethodSearch = true;
+                                        break;
+                                    }
+                                }
+
+                                // AGREGAR PUNTOS
+                                if (breakMethodSearch) {
+                                    localPoints += 0.4;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // MISMO NUMERO DE LINEAS
+                        if (lines == linesPr2) {
+                            localPoints += 0.4;
+                        }
+
+                        // AGREGAR PUNTOS DE CLASE REPETIDA
+                        Element classElement = new Element("class", currentId, localPoints);
+                        classPoints.put(currentId, classElement);
                     }
-
-                }
-
-                if (breakSearch) {
-                    classCount++;
                 }
             }
 
             // REPITENCIA EN METODOS
-            float methodPoints = 0;
-            int methodCount = 0;
-            ArrayList<String> methodList1 = values1.get("method");
-            ArrayList<String> methodList2 = values2.get("method");
+            HashMap<String, Element> methodPoints = new HashMap<String, Element>();
+            ArrayList<String> methodList1 = elementsPr1.get("method");
+            ArrayList<String> methodList2 = elementsPr2.get("method");
+
+            ElementCounter methodCounter1 = new ElementCounter(proyectPath1, newPath1, "method", methodList1.size());
+            ElementCounter methodCounter2 = new ElementCounter(proyectPath2, newPath2, "method", methodList2.size());
+            elements.add(methodCounter1);
+            elements.add(methodCounter2);
+
+            ArrayList<String> methodLines1 = elementsPr1.get("method-lines");
+            ArrayList<String> methodLines2 = elementsPr2.get("method-lines");
+
+            ArrayList<String> methodParams1 = elementsPr1.get("method-params");
+            ArrayList<String> methodParams2 = elementsPr2.get("method-params");
 
             // NOMBRES
             for (int cI = 0; cI < methodList1.size(); cI++) {
-                boolean breakSearch = false;
+                // LOCAL
                 String currentId = methodList1.get(cI);
-                int lines = Integer.parseInt(values1.get("method-lines").get(cI));
-                int params = Integer.parseInt(values1.get("method-params").get(cI));
+                int lines = Integer.parseInt(methodLines1.get(cI));
+                int params = Integer.parseInt(methodParams1.get(cI));
 
                 for (int cI2 = 0; cI2 < methodList2.size(); cI2++) {
-                    int lines2 = Integer.parseInt(values2.get("method-lines").get(cI2));
-                    int params2 = Integer.parseInt(values2.get("method-params").get(cI2));
+                    // LINEAS Y PARAMETROS
+                    int lines2 = Integer.parseInt(methodLines2.get(cI2));
+                    int params2 = Integer.parseInt(methodParams2.get(cI2));
+                    double localPoints = 0;
 
                     if (currentId.equals(methodList2.get(cI2))) {
+                        localPoints += 0.4;
+
+                        // MISMOS PARAMETROS
                         if (params == params2) {
-                            methodPoints += 0.3;
+                            localPoints += 0.3;
                         }
 
+                        // MISMAS LINEAS
                         if (lines == lines2) {
-                            methodPoints += 0.3;
+                            localPoints += 0.3;
                         }
-                        classPoints += 0.4;
-                        methodPoints += 0.4;
-                        breakSearch = true;
 
                     } else {
+
+                        // MISMAS LINEAS
                         if (lines == lines2) {
-                            methodPoints += 0.3;
+                            localPoints += 0.3;
 
+                            // MISMOS PARAMETROS
                             if (params == params2) {
-                                methodPoints += 0.3;
+                                localPoints += 0.3;
                             }
-
-                            breakSearch = true;
 
                         }
                     }
-                }
 
-                if (breakSearch) {
-                    methodCount++;
+                    // AGREGAR PUNTOS DE METODO
+                    if (localPoints > 0) {
+                        Element methodElement = new Element("method", currentId, localPoints);
+                        methodPoints.put(currentId, methodElement);
+                    }
                 }
             }
 
             // REPITENCIA DE VARIABLES
-            float varPoints = 0;
-            int varCount = 0;
-            ArrayList<String> varList1 = values1.get("var");
-            ArrayList<String> varList2 = values2.get("var");
+            HashMap<String, Element> varPoints = new HashMap<String, Element>();
+            ArrayList<String> varList1 = elementsPr1.get("var");
+            ArrayList<String> varList2 = elementsPr2.get("var");
 
+            ElementCounter varCounter1 = new ElementCounter(proyectPath1, newPath1, "var", varList1.size());
+            ElementCounter varCounter2 = new ElementCounter(proyectPath2, newPath2, "var", varList2.size());
+            elements.add(varCounter1);
+            elements.add(varCounter2);
+
+            // NOMBRES
             for (int cI = 0; cI < varList1.size(); cI++) {
-                boolean breakSearch = false;
+                // LOCAL
                 String currentId = varList1.get(cI);
 
                 for (int cI2 = 0; cI2 < varList2.size(); cI2++) {
+                    // MISMO NOMBRE
                     if (currentId.equals(varList2.get(cI2))) {
-                        breakSearch = true;
+                        Element varElement = new Element("var", currentId, 1);
+                        varPoints.put(currentId, varElement);
                     }
-                }
-
-                if (breakSearch) {
-                    varPoints = 1;
-                    varCount++;
                 }
             }
 
             // REPITENCIA DE COMENTARIOS
-            float commentPoints = 0;
-            int commentCount = 0;
-            ArrayList<String> cmtList1 = values1.get("comment");
-            ArrayList<String> cmtList2 = values2.get("comment");
+            HashMap<String, Element> commentPoints = new HashMap<String, Element>();
+            ArrayList<String> commentList1 = elementsPr1.get("comment");
+            ArrayList<String> commentList2 = elementsPr2.get("comment");
 
-            for (int cI = 0; cI < cmtList1.size(); cI++) {
-                boolean breakSearch = false;
-                String currentId = cmtList1.get(cI);
+            ElementCounter commentCounter1 = new ElementCounter(proyectPath1, newPath1, "comment", commentList1.size());
+            ElementCounter commentCounter2 = new ElementCounter(proyectPath2, newPath2, "comment", commentList2.size());
+            elements.add(commentCounter1);
+            elements.add(commentCounter2);
 
-                for (int cI2 = 0; cI2 < cmtList2.size(); cI2++) {
-                    if (currentId.equals(cmtList2.get(cI2))) {
-                        breakSearch = true;
+            // NOMBRES
+            for (int cI = 0; cI < commentList1.size(); cI++) {
+                // LOCAL
+                String currentId = commentList1.get(cI);
+
+                for (int cI2 = 0; cI2 < commentList2.size(); cI2++) {
+                    // MISMO NOMBRE
+                    if (currentId.equals(commentList2.get(cI2))) {
+                        Element commentElement = new Element("comment", currentId, 1);
+                        commentPoints.put(currentId, commentElement);
                     }
-                }
-
-                if (breakSearch) {
-                    commentPoints = 1;
-                    commentCount++;
                 }
             }
 
             // AGREGAR PUNTOS
-            FilePoints filePoints = new FilePoints(classPoints, varPoints, methodPoints, commentPoints, classCount, varCount, methodCount, commentCount);
+            FilePoints filePoints = new FilePoints(classPoints, varPoints, methodPoints, commentPoints);
             points.put(path, filePoints);
         }
 
