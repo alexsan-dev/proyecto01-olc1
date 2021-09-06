@@ -26,7 +26,7 @@ public class LineGraph extends Graph {
     }
 
     /**
-     * Asignar propiedades de grafica
+     * Asignar propiedades de gráfica
      *
      * @param prop
      */
@@ -72,13 +72,7 @@ public class LineGraph extends Graph {
         String filePath2 = newPath2 + "/" + file;
 
         // DATOS
-        int pr1Vars = 0,
-                pr1Methods = 0,
-                pr1Classes = 0,
-                pr1Comments = 0,
-                pr2Vars = 0,
-                pr2Methods = 0,
-                pr2Classes = 0,
+        int pr1Vars = 0, pr1Methods = 0, pr1Classes = 0, pr1Comments = 0, pr2Vars = 0, pr2Methods = 0, pr2Classes = 0,
                 pr2Comments = 0;
 
         for (int elementIndex = 0; elementIndex < reports.elements.size(); elementIndex++) {
@@ -125,13 +119,13 @@ public class LineGraph extends Graph {
 
         // AGREGAR AL DATASET PROYECTO1
         dataset.addValue(pr1Vars, series1, "Variables");
-        dataset.addValue(pr1Methods, series1, "Metodos");
+        dataset.addValue(pr1Methods, series1, "Métodos");
         dataset.addValue(pr1Classes, series1, "Clases");
         dataset.addValue(pr1Comments, series1, "Comentarios");
 
         // AGREGAR AL DATASET PROYECTO2
         dataset.addValue(pr2Vars, series2, "Variables");
-        dataset.addValue(pr2Methods, series2, "Metodos");
+        dataset.addValue(pr2Methods, series2, "Métodos");
         dataset.addValue(pr2Classes, series2, "Clases");
         dataset.addValue(pr2Comments, series2, "Comentarios");
 
@@ -143,13 +137,8 @@ public class LineGraph extends Graph {
         // DATASET
         CategoryDataset dataset = createDataset();
 
-        // CREAR GRAFICA
-        JFreeChart chart = ChartFactory.createLineChart(
-                title,
-                "Proyectos",
-                "Cantidad",
-                dataset
-        );
+        // CREAR GRÁFICA
+        JFreeChart chart = ChartFactory.createLineChart(title, "Proyectos", "Cantidad", dataset);
 
         // GUARDAR IMAGEN
         try {

@@ -45,10 +45,10 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="Reportes">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#genAnalytics" text="Estadistico" />
-                                <MenuItem mnemonicParsing="false" onAction="#genErrors" text="Errores" />
-                                <MenuItem mnemonicParsing="false" onAction="#genTokens" text="Tokens" />
-                                <MenuItem mnemonicParsing="false" onAction="#genJSON" text="JSON" />
+                                <MenuItem accelerator="Shortcut+A" mnemonicParsing="false" onAction="#genAnalytics" text="Estadistico" />
+                                <MenuItem accelerator="Shortcut+E" mnemonicParsing="false" onAction="#genErrors" text="Errores" />
+                                <MenuItem accelerator="Shortcut+T" mnemonicParsing="false" onAction="#genTokens" text="Tokens" />
+                                <MenuItem accelerator="Shortcut+J" mnemonicParsing="false" onAction="#genJSON" text="JSON" />
                             </items>
                         </Menu>
                     </menus>

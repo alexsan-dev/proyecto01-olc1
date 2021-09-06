@@ -27,7 +27,7 @@ public class BarGraph extends Graph {
     }
 
     /**
-     * Asignar asignar propiedad de grafica
+     * Asignar propiedad de gráfica
      *
      * @param prop
      */
@@ -80,7 +80,7 @@ public class BarGraph extends Graph {
     }
 
     /**
-     * Generar imagen de grafica
+     * Generar imagen de gráfica
      *
      * @param path
      */
@@ -89,15 +89,9 @@ public class BarGraph extends Graph {
         // DATASET
         CategoryDataset dataset = createDataset();
 
-        // CREAR GRAFICA
-        JFreeChart chart = ChartFactory.createBarChart(
-                title,
-                xaxisTitle,
-                yaxisTitle,
-                dataset,
-                PlotOrientation.VERTICAL,
-                true, true, false
-        );
+        // CREAR GRÁFICA
+        JFreeChart chart = ChartFactory.createBarChart(title, xaxisTitle, yaxisTitle, dataset, PlotOrientation.VERTICAL,
+                true, true, false);
 
         // GUARDAR IMAGEN
         try {

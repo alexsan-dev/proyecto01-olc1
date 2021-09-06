@@ -38,7 +38,7 @@ public class PieGraph extends Graph {
     }
 
     /**
-     * Generar imagen de grafica
+     * Generar imagen de gráfica
      *
      * @param path
      */
@@ -47,14 +47,8 @@ public class PieGraph extends Graph {
         // DATASET
         PieDataset dataset = createDataset();
 
-        // CREAR GRAFICA
-        JFreeChart chart = ChartFactory.createPieChart(
-                title,
-                dataset,
-                true,
-                true,
-                false
-        );
+        // CREAR GRÁFICA
+        JFreeChart chart = ChartFactory.createPieChart(title, dataset, true, true, false);
 
         // GUARDAR IMAGEN
         try {

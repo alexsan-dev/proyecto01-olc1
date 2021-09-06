@@ -49,14 +49,14 @@ public class Reports {
     }
 
     /**
-     * Asignar rutas de comparacion
+     * Asignar rutas de comparación
      *
      * @param pathA
      * @param pathB
      * @param line
      */
     public static void setComparePaths(String pathA, String pathB, int line) {
-        // NO ESTAN VACIA
+        // NO ESTÁN VACIÁ
         if (path1.equals("") && path2.equals("")) {
             path1 = pathA.charAt(pathA.length() - 1) == '/' ? pathA : pathA + "/";
             path2 = pathB.charAt(pathB.length() - 1) == '/' ? pathB : pathB + "/";
@@ -90,7 +90,7 @@ public class Reports {
     }
 
     /**
-     * Agregar grafica
+     * Agregar gráfica
      *
      * @param graph
      * @param title
@@ -105,7 +105,7 @@ public class Reports {
     }
 
     /**
-     * Inicia el analisis de copias
+     * Inicia el análisis de copias
      */
     public static void compare() {
         // COMPARE
@@ -143,7 +143,7 @@ public class Reports {
     }
 
     /**
-     * Reporte estadistico
+     * Reporte estadístico
      */
     public static void getAnalyticsReport() {
         String series1 = path1.substring(0, path1.length() - 1);
@@ -164,7 +164,6 @@ public class Reports {
         // PUNTOS
         if (points.size() > 0) {
             FilePoints pathPoints = points.get(path);
-
             String lowerKey = key.toLowerCase();
 
             // CALCULAR PARA CLASES
@@ -199,7 +198,7 @@ public class Reports {
     }
 
     /**
-     * Generar imagenes de todas las graficas
+     * Generar imágenes de todas las gráficas
      */
     public static void generateGraphs() {
         // CREAR CARPETA SI NO EXISTE
@@ -209,7 +208,8 @@ public class Reports {
             projectDir.mkdirs();
         }
 
-        // GRAFICAR
+        // GRÁFICAS
+        System.out.println("Comparando proyectos");
         System.out.println("Generando todas las graficas");
 
         for (int i = 0; i < graphs.size(); i++) {

@@ -41,8 +41,8 @@ public class ErrorHandler {
      * @param s
      * @param file
      */
-    public static void add(Symbol s, String file) {
-        ErrorSymbol symbol = new ErrorSymbol(s, file);
+    public static void add(Symbol s, String file, String msg) {
+        ErrorSymbol symbol = new ErrorSymbol(s, file, msg);
         symbols.add(symbol);
     }
 }

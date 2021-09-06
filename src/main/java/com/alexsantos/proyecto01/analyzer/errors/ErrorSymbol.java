@@ -11,7 +11,7 @@ public class ErrorSymbol {
     // GLOBALES
     public int line, col;
     public Object lex;
-    public String file;
+    public String file, msg;
 
     /**
      * Constructor
@@ -19,10 +19,11 @@ public class ErrorSymbol {
      * @param s
      * @param file
      */
-    public ErrorSymbol(Symbol s, String file) {
-        line = s.left;
-        col = s.right;
+    public ErrorSymbol(Symbol s, String file, String msg) {
+        line = s.right;
+        col = s.left;
         lex = s.value;
+        this.msg = msg;
         this.file = file;
     }
 }

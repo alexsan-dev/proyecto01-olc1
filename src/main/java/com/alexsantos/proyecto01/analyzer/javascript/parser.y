@@ -36,7 +36,7 @@ parser code {:
         " columna " + s.left + " componente: " + s.value + ".\n");
 
         ErrorHandler errorHandler = ErrorHandler.getInstance();
-        errorHandler.add(s, filePath);
+        errorHandler.add(s, filePath, "Error sintactico");
     }
 
     public void unrecovered_syntax_error (Symbol s) throws java.lang.Exception {
@@ -45,7 +45,7 @@ parser code {:
         " no reconocido.\n");
 
         ErrorHandler errorHandler = ErrorHandler.getInstance();
-        errorHandler.add(s, filePath);
+        errorHandler.add(s, filePath, "Error sintactico irrecuperable");
     }
 :}
 
@@ -62,16 +62,11 @@ action code {:
             if (declaration[0].equals("method")) {
                int methodStart = Integer.parseInt(declaration[1]);
                if (methodStart >= content.lineStart
-                    && methodStart < content.lineEnd) {
+                    && methodStart <= content.lineEnd) {
                  addElement("class-method", classID + "-" + declaration[2]);
                }
             }
         }
-    }
-
-    public void addToken (String lex, String key, int line, int col) {
-        TokensHandler tokens = TokensHandler.getInstance();
-        tokens.add(parser.filePath, lex, key, line, col);
     }
 :}
 
@@ -80,7 +75,7 @@ terminal String decimal,
 strtext, id, cmt, mcmt;
 
 /* SIMBOLOS */
-terminal comma,equals,openbracket,
+terminal comma,equals,openbracket,timestimes,
 closebracket,semicolom,openparenthesis,
 closeparenthesis,colom,plus,lessM,times,
 div,mod,or,and,xor,pluseq,lesseq,timeseq,
@@ -96,11 +91,9 @@ dot,logsym,requiresym;
 /* NO TERMINALES PRINCIPALES */
 non terminal START,METHODS,METHOD,NEWCLASS,
 ASSIGNMENT,EXPRESSIONS,VARVALUE,CONTROLSEQ,
-EXPRESSION,COMMENTS,SWITCHSEQ,
-SWITCHSEQCASES,SWITCHSEQCONTENT,EXPRESSIONOPT,
-FORSEQ,WHILESEQ,DOWHILESEQ,CONSOLESEQ,
-FORSEQPARAMS,EXPRESSIONGROUP,
-INLINEASSIGNMENTS,INLINEASSIGNMENT;
+COMMENTS,SWITCHSEQ,SWITCHSEQCASES,SWITCHSEQCONTENT,
+EXPRESSIONOPT,FORSEQ,WHILESEQ,DOWHILESEQ,CONSOLESEQ,
+FORSEQPARAMS,INLINEASSIGNMENTS,INLINEASSIGNMENT;
 
 /* NO TERMINALES MEDIBLES */
 non terminal String[] FUNCTIONHEADER, DECLARATION;
@@ -111,20 +104,21 @@ non terminal MethodContent METHODCONTENT;
 non terminal Object FUNCTIONPARAMS;
 
 /* PRESEDENCIA */
-precedence left openparenthesis, closeparenthesis;
 precedence left plus, lessM;
 precedence left times, div;
 precedence left or, and;
 precedence left mod, xor;
-precedence left plusplus, lessMlessM;
+precedence left plusplus, lessMlessM, timestimes;
 precedence left equals, notequals;
 precedence left pluseq, lesseq;
 precedence left timeseq, diveq;
 precedence left modeq, xoreq;
 precedence left major, minor;
+precedence left openparenthesis, closeparenthesis;
 precedence left moreoreq, lessoreq;
 precedence left comma, semicolom;
 precedence left cmt, mcmt;
+precedence left var, let, constsym;
 
 start with START;
 
@@ -136,7 +130,8 @@ START ::= METHODS {: :};
 /* FUNCIONES PRINCIPALES */
 METHODS ::= METHODS METHOD | METHOD {: :};
 
-METHOD ::= NEWCLASS | FUNCTION | COMMENTS {: :};
+METHOD ::= COMMENTS | NEWCLASS | FUNCTION | ASSIGNMENT
+| error openbracket {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* COMENTARIOS */
@@ -147,12 +142,10 @@ COMMENTS ::= COMMENTS MULTICOMMENT:text {: addElement("comment", text); :}
 
 COMMENT ::= cmt:text {:
     RESULT = text;
-    addToken("comment", text, textright, textleft);
 :};
 
 MULTICOMMENT ::= mcmt:text {:
     RESULT = text;
-    addToken("multicomment", text, textright, textleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -161,18 +154,14 @@ METHODCONTENT ::= openbracket:openLine
 DECLARATIONS:list closebracket:closeLine {:
     int lineStart = openLineright;
     int lineEnd = closeLineright;
-
     MethodContent data = new MethodContent(list, lineStart, lineEnd);
-    addToken("openbracket", "{", openLineright, openLineleft);
     RESULT = data;
 :} | openbracket:openLine closebracket:closeLine {:
     int lineStart = openLineright;
     int lineEnd = closeLineright;
-
     MethodContent data = new MethodContent(null, lineStart, lineEnd);
-    addToken("openbracket", "{", openLineright, openLineleft);
     RESULT = data;
-:} error openbracket {: :};
+:};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* CLASES */
@@ -181,20 +170,17 @@ NEWCLASS ::= classsym id:classID METHODCONTENT:content {:
     addElement("class", classID);
     addElement("class-lines", counter);
     addClassMethod(classID, content);
-    addToken("class", classID, classIDright, classIDleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* METODOS */
 FUNCTIONHEADER ::=  id:funcID openparenthesis
 FUNCTIONPARAMS:params closeparenthesis {:
-    String[] paramss = new String[]{funcID, Integer.toString((int) params)};
-    RESULT = paramss;
-    addToken("function", funcID, funcIDright, funcIDleft);
+    String[] functionParams = new String[]{funcID, Integer.toString((int) params)};
+    RESULT = functionParams;
 :} | id:funcID openparenthesis closeparenthesis {:
-    String[] paramss = new String[]{funcID, "0"};
-    RESULT = paramss;
-    addToken("function", funcID, funcIDright, funcIDleft);
+    String[] functionParams = new String[]{funcID, "0"};
+    RESULT = functionParams;
 :};
 
 FUNCTIONPARAMS ::= FUNCTIONPARAMS:count comma EXPRESSIONS {:
@@ -211,7 +197,6 @@ FUNCTION ::= FUNCTIONHEADER:funcID METHODCONTENT:content {:
     addElement("method-params", funcID[1]);
     addElement("method-lines", counter);
     RESULT = funcID[0];
-    addToken("function", funcID[0], funcIDright, funcIDleft);
 :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -220,7 +205,6 @@ DECLARATIONS ::= DECLARATIONS:list DECLARATION:line semicolom {:
     RESULT = list;
     String[] data = new String[] {line[0], line[1], line[2]};
     RESULT.add(data);
-    addToken("semicolom", ";", lineright, lineleft);
 :} | DECLARATIONS:list DECLARATION:line {:
     RESULT = list;
     String[] data = new String[] {line[0], line[1], line[2]};
@@ -230,7 +214,6 @@ DECLARATIONS ::= DECLARATIONS:list DECLARATION:line semicolom {:
     String[] data = new String[] {line[0], line[1], line[2]};
     RESULT = list;
     RESULT.add(data);
-    addToken("semicolom", ";", lineright, lineleft);
 :} | DECLARATION:line {:
     ArrayList<String[]> list = new ArrayList<String[]>();
     String[] data = new String[] {line[0], line[1], line[2]};
@@ -273,15 +256,10 @@ INLINEASSIGNMENTS ::= INLINEASSIGNMENTS comma INLINEASSIGNMENT
 
 INLINEASSIGNMENT ::= id:varID equals EXPRESSIONS {:
     addElement("var", varID);
-    addToken("id", varID, varIDright, varIDleft);
-:};
+:} | error equals | error semicolom {: :};
 
-ASSIGNMENT ::= VARTYPE:varText id:varID {:
-    addElement("var", varID);
-    addToken("id", varID, varIDright, varIDleft);
-    addToken("vartype", varText, varTextright, varTextleft);
-:} | VARTYPE INLINEASSIGNMENTS
-| INLINEASSIGNMENTS {: :};
+ASSIGNMENT ::= VARTYPE id:varID
+| VARTYPE INLINEASSIGNMENTS | INLINEASSIGNMENTS {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* TIPOS DE VARIABLES */
@@ -291,191 +269,67 @@ VARTYPE ::= var {: RESULT = "var"; :}
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* TODAS LAS EXPRESIONES VALIDAS */
-EXPRESSIONS ::= EXPRESSIONS EXPRESSIONOPT EXPRESSIONGROUP
-| EXPRESSIONGROUP {: :};
-
-EXPRESSIONGROUP ::= openparenthesis EXPRESSION closeparenthesis
-| lessM openparenthesis EXPRESSION closeparenthesis
-| not openparenthesis EXPRESSION closeparenthesis
-| EXPRESSION {: :};
-
-EXPRESSION ::= EXPRESSION EXPRESSIONOPT VARVALUE
+EXPRESSIONS ::= EXPRESSIONS EXPRESSIONOPT EXPRESSIONS
+| openparenthesis EXPRESSIONS closeparenthesis
+| not EXPRESSIONS
+| lessMlessM EXPRESSIONS
+| lessM EXPRESSIONS
 | VARVALUE | error VARVALUE | error EXPRESSIONOPT {: :};
 
-EXPRESSIONOPT ::= plus:text {:
-    addToken("plus", "+", textright, textleft);
-:} | lessM:text {:
-    addToken("lessM", "-", textright, textleft);
-:} | times:text {:
-    addToken("times", "*", textright, textleft);
-:} | times times:text {:
-    addToken("timestimes", "**", textright, textleft);
-:} | div:text {:
-    addToken("div", "/", textright, textleft);
-:} | mod:text {:
-    addToken("mod", "%", textright, textleft);
-:} | or:text {:
-    addToken("or", "||", textright, textleft);
-:} | and:text {:
-    addToken("and", "&&", textright, textleft);
-:} | xor:text {:
-    addToken("xors", "^", textright, textleft);
-:} | notequals:text {:
-    addToken("notequals", "!=", textright, textleft);
-:} | equals equals:text {:
-    addToken("equalsequals", "==", textright, textleft);
-:} | pluseq:text {:
-    addToken("pluseq", "+=", textright, textleft);
-:} | lesseq:text {:
-    addToken("lesseq", "-=", textright, textleft);
-:} | timeseq:text {:
-    addToken("timeseq", "*=", textright, textleft);
-:} | xoreq:text {:
-    addToken("xoreq", "^=", textright, textleft);
-:} | diveq:text {:
-    addToken("diveq", "/=", textright, textleft);
-:} | modeq:text {:
-    addToken("modeq", "%=", textright, textleft);
-:} | moreoreq:text {:
-    addToken("moreoreq", ">=", textright, textleft);
-:} | lessoreq:text {:
-    addToken("lessoreq", "<=", textright, textleft);
-:} | major:text {:
-    addToken("major", ">", textright, textleft);
-:} | minor:text {:
-    addToken("minor", "-", textright, textleft);
-:};
+EXPRESSIONOPT ::= plus| lessM | times | timestimes
+| div | mod | or | and | xor | notequals
+| equals equals | pluseq | lesseq | timeseq | xoreq
+| diveq | modeq | moreoreq | lessoreq | major
+| minor:text {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* VALORES DE VARIABLES */
-VARVALUE ::= decimal:text {:
-    addToken("number", text, textright, textleft);
-:} | strtext:text {:
-    addToken("string", text, textright, textleft);
-:} | breaksym:text {:
-    addToken("break", "break", textright, textleft);
-:} | id:text {:
-    addToken("id", text, textright, textleft);
-:} | booltrue:text {:
-    addToken("bool", "true", textright, textleft);
-:} | boolfalse:text {:
-    addToken("bool", "false", textright, textleft);
-:} | not boolfalse:text {:
-    addToken("notbool", "!false", textright, textleft);
-:} | not booltrue:text {:
-    addToken("notbool", "!true", textright, textleft);
-:} | not id:text {:
-    addToken("id", text, textright, textleft);
-:} | id:text plusplus {:
-    addToken("id", text, textright, textleft);
-:} | id:text lessMlessM {:
-    addToken("id", text, textright, textleft);
-:} | plusplus id:text {:
-    addToken("id", text, textright, textleft);
-:} | lessMlessM id:text {:
-    addToken("id", text, textright, textleft);
-:} | requiresym:req openparenthesis strtext:text closeparenthesis {:
-    addToken("require", "require", reqright, reqleft);
-    addToken("string", text, textright, textleft);
-:};
+VARVALUE ::= decimal | strtext | breaksym | id | booltrue
+| boolfalse | id plusplus | id lessMlessM | plusplus id
+| requiresym openparenthesis strtext closeparenthesis {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* IF ELSE */
-CONTROLSEQ ::= CONSTROLSEQSYM:sym openparenthesis EXPRESSIONS
-closeparenthesis METHODCONTENT {:
-    addToken("controlsym", sym, symright, symleft);
-:} | elsesym:sym METHODCONTENT {:
-    addToken("controlsym", "else", symright, symleft);
-:};
+CONTROLSEQ ::= CONSTROLSEQSYM openparenthesis EXPRESSIONS
+closeparenthesis METHODCONTENT
+| elsesym METHODCONTENT {: :};
 
 CONSTROLSEQSYM ::= ifsym {: RESULT = "if"; :}
 | elsesym ifsym {: RESULT = "else if"; :} ;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* FOR */
-FORSEQ ::= forsym:sym openparenthesis:par FORSEQPARAMS closeparenthesis:par2
-METHODCONTENT {:
-    addToken("forsym", "for", symright, symleft);
-    addToken("openparenthesis", "(", parright, parleft);
-    addToken("closeparenthesis", ")", par2right, par2left);
-:};
+FORSEQ ::= forsym openparenthesis FORSEQPARAMS closeparenthesis
+METHODCONTENT {: :};
 
-FORSEQPARAMS ::= ASSIGNMENT semicolom:s1 EXPRESSIONS semicolom:s2 EXPRESSIONS {:
-    addToken("semicolom", ";", s1right, s1left);
-    addToken("semicolom", ";", s2right, s2left);
-:} | ASSIGNMENT semicolom:s1 EXPRESSIONS semicolom:s2 ASSIGNMENT {:
-    addToken("semicolom", ";", s1right, s1left);
-    addToken("semicolom", ";", s2right, s2left);
-:};
+FORSEQPARAMS ::= ASSIGNMENT semicolom EXPRESSIONS semicolom ASSIGNMENT
+| ASSIGNMENT semicolom EXPRESSIONS semicolom EXPRESSIONS {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* WHILE */
-WHILESEQ ::= whilesym:sym openparenthesis:par EXPRESSIONS closeparenthesis:par2
-METHODCONTENT {:
-    addToken("whilesym", "while", symright, symleft);
-    addToken("openparenthesis", "(", parright, parleft);
-    addToken("closeparenthesis", ")", par2right, par2left);
-:};
+WHILESEQ ::= whilesym openparenthesis EXPRESSIONS closeparenthesis
+METHODCONTENT {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* DO WHILE */
-DOWHILESEQ ::= dosym:dos METHODCONTENT whilesym:sym
-openparenthesis:par EXPRESSIONS closeparenthesis:par2 {:
-    addToken("dosym", "do", dosright, dosleft);
-    addToken("whilesym", "while", symright, symleft);
-    addToken("openparenthesis", "(", parright, parleft);
-    addToken("closeparenthesis", ")", par2right, par2left);
-:};
+DOWHILESEQ ::= dosym METHODCONTENT whilesym
+openparenthesis EXPRESSIONS closeparenthesis {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* SWITCH */
-SWITCHSEQ ::= switchsym:sym openparenthesis:par VARVALUE closeparenthesis:par2
-openbracket:b1 SWITCHSEQCASES defaultsym:defsym colom:cols
-DECLARATIONS closebracket:b2 {:
-    addToken("switchsym", "switch", symright, symleft);
-    addToken("openparenthesis", "(", parright, parleft);
-    addToken("closeparenthesis", ")", par2right, par2left);
-    addToken("openbracket", "{", b1right, b2left);
-    addToken("colom", ":", colsright, colsleft);
-    addToken("defaultsym", "default", defsymright, defsymleft);
-:};
+SWITCHSEQ ::= switchsym openparenthesis VARVALUE closeparenthesis
+openbracket SWITCHSEQCASES defaultsym colom
+DECLARATIONS closebracket
+| switchsym openparenthesis VARVALUE closeparenthesis
+openbracket SWITCHSEQCASES closebracket {: :};
 
 SWITCHSEQCASES ::= SWITCHSEQCASES SWITCHSEQCONTENT
 | SWITCHSEQCONTENT {: :};
 
-SWITCHSEQCONTENT ::= casesym:sym VARVALUE colom:cols DECLARATIONS breaksym:br {:
-    addToken("casesym", "case", symright, symleft);
-    addToken("colom", ":", colsright, colsleft);
-    addToken("breaksym", "break", brright, brleft);
-:} | casesym:sym VARVALUE colom:cols DECLARATIONS breaksym:br semicolom:sm {:
-    addToken("casesym", "case", symright, symleft);
-    addToken("colom", ":", colsright, colsleft);
-    addToken("breaksym", "break", brright, brleft);
-    addToken("semicolom", ";", smright, smleft);
-:} | casesym:sym VARVALUE colom:cols breaksym:br semicolom:sm {:
-    addToken("casesym", "case", symright, symleft);
-    addToken("colom", ":", colsright, colsleft);
-    addToken("breaksym", "break", brright, brleft);
-    addToken("semicolom", ";", smright, smleft);
-:} | casesym:sym VARVALUE colom:cols breaksym:br {:
-    addToken("casesym", "case", symright, symleft);
-    addToken("colom", ":", colsright, colsleft);
-    addToken("breaksym", "break", brright, brleft);
-:};
+SWITCHSEQCONTENT ::= casesym VARVALUE colom DECLARATIONS {: :};
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 /* CONSOLE.LOG */
-CONSOLESEQ ::= console:cls dot:d logsym:logs
-openparenthesis:c1 EXPRESSIONS closeparenthesis:c2 {:
-    addToken("console", "console", clsright, clsleft);
-    addToken("dot", ".", dright, dleft);
-    addToken("log", "log", logsright, logsleft);
-    addToken("openparenthesis", "(", c1right, c1left);
-    addToken("closeparenthesis", ")", c2right, c2left);
-:} | console:cls dot:d logsym:logs openparenthesis:c1 closeparenthesis:c2 {:
-    addToken("console", "console", clsright, clsleft);
-    addToken("dot", ".", dright, dleft);
-    addToken("log", "log", logsright, logsleft);
-    addToken("openparenthesis", "(", c1right, c1left);
-    addToken("closeparenthesis", ")", c2right, c2left);
-:};
+CONSOLESEQ ::= console dot logsym
+openparenthesis EXPRESSIONS closeparenthesis
+| console dot logsym openparenthesis closeparenthesis {: :};

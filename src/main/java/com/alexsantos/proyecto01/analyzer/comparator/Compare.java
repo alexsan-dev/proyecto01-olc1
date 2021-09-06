@@ -78,16 +78,17 @@ public class Compare {
     public double getGeneralPoints(HashMap<String, FilePoints> points) {
         // PUNTOS
         double generalPoints = 0;
-        double classPoints = 0;
-        double varPoints = 0;
-        double methodPoints = 0;
-        double commentPoints = 0;
+        double classRepeated = 0;
+        double varRepeated = 0;
+        double methodRepeated = 0;
+        double commentRepeated = 0;
 
         int classCount = 0;
         int varCount = 0;
         int methodCount = 0;
         int commentCount = 0;
 
+        // TODO: el puntaje se divide por el total, quitar restriccion de > 0
         // ASIGNAR PUNTOS DE PROYECTO1
         for (int i = 0; i < project1Paths.size(); i++) {
             FilePoints fPoints = points.get(project1Paths.get(i));
@@ -95,33 +96,44 @@ public class Compare {
             // CALCULAR PUNTOS DE CLASES
             for (Element entry : fPoints.classPoints.values()) {
                 classCount++;
-                classPoints += entry.points;
+
+                if (Double.compare(entry.points, 0.6) >= 0) {
+                    classRepeated += entry.points;
+                }
             }
 
             // CALCULAR PUNTOS DE VARIABLES
             for (Element entry : fPoints.varPoints.values()) {
                 varCount++;
-                varPoints += entry.points;
+
+                if (Double.compare(entry.points, 0.6) >= 0) {
+                    varRepeated += entry.points;
+                }
             }
 
             // CALCULAR PUNTOS DE METODOS
             for (Element entry : fPoints.methodPoints.values()) {
                 methodCount++;
-                methodPoints += entry.points;
+
+                if (Double.compare(entry.points, 0.6) >= 0) {
+                    methodRepeated += entry.points;
+                }
             }
 
             // CALCULAR PUNTOS DE COMENTARIOS
             for (Element entry : fPoints.commentPoints.values()) {
                 commentCount++;
-                commentPoints += entry.points;
+                if (Double.compare(entry.points, 0.6) >= 0) {
+                    commentRepeated += entry.points;
+                }
             }
         }
 
         // CALCULAR CRITERIOS DE PUNTAJE GENERAL
-        double genComments = (double) ((Double.compare(commentPoints, 0.6) > 0) ? ((commentCount / commentPoints) * 0.2) : 0);
-        double genVars = (double) ((Double.compare(varPoints, 0.6) > 0) ? ((varCount / varPoints) * 0.2) : 0);
-        double genMethods = (double) ((Double.compare(methodPoints, 0.6) > 0) ? ((methodCount / methodPoints) * 0.3) : 0);
-        double genClasses = (double) ((Double.compare(classPoints, 0.6) > 0) ? ((classCount / classPoints) * 0.3) : 0);
+        double genComments = (double) ((commentRepeated / commentCount) * 0.2);
+        double genVars = (double) ((varRepeated / varCount) * 0.2);
+        double genMethods = (double) ((methodRepeated / methodCount) * 0.3);
+        double genClasses = (double) ((classRepeated / classCount) * 0.3);
 
         // CALCULAR PUNTAJE GENERAL
         generalPoints = genComments + genVars + genMethods + genClasses;
@@ -175,8 +187,14 @@ public class Compare {
             // CREAR PARSERS
             try {
                 // ARCHIVO 01
-                parser1 = new JSParser(new JSScanner(new BufferedReader(new FileReader(file1))));
-                parser2 = new JSParser(new JSScanner(new BufferedReader(new FileReader(file2))));
+                JSScanner scanner1 = new JSScanner(new BufferedReader(new FileReader(file1)));
+                scanner1.setFilePath(parentPath1);
+
+                JSScanner scanner2 = new JSScanner(new BufferedReader(new FileReader(file2)));
+                scanner2.setFilePath(parentPath2);
+
+                parser1 = new JSParser(scanner1);
+                parser2 = new JSParser(scanner2);
 
             } catch (Exception ex) {
                 System.err.println("Error en archivos : " + ex.getMessage());
@@ -225,45 +243,47 @@ public class Compare {
                 for (int cI2 = 0; cI2 < classList2.size(); cI2++) {
                     // LINEAS DEL SEGUNDO
                     int linesPr2 = Integer.parseInt(classLines2.get(cI));
+                    String currentId2 = classList2.get(cI2);
+                    double localPoints = 0;
 
                     // MISMO NUMERO DE ID
-                    if (currentId.equals(classList2.get(cI2))) {
-                        double localPoints = 0.2;
+                    if (currentId.equals(currentId2)) {
+                        localPoints += 0.2;
+                    }
 
-                        // BUSCAR REPITENCIA DE METODOS DE UNA CLASE
-                        for (int methodIndex = 0; methodIndex < classMethods1.size(); methodIndex++) {
-                            // ID METODO 1
-                            boolean breakMethodSearch = false;
-                            String methodId = classMethods1.get(methodIndex);
-
-                            if (methodId.contains(currentId)) {
-                                for (int method2Index = 0; method2Index < classMethods2.size(); method2Index++) {
-                                    // ID METODO 2
-                                    String methodId2 = classMethods2.get(method2Index);
-
-                                    // MISMOS IDS
-                                    if (methodId.equals(methodId2)) {
-                                        breakMethodSearch = true;
-                                        break;
-                                    }
-                                }
-
-                                // AGREGAR PUNTOS
-                                if (breakMethodSearch) {
-                                    localPoints += 0.4;
-                                    break;
-                                }
-                            }
+                    // BUSCAR REPITENCIA DE METODOS DE UNA
+                    int classMethodsCount1 = 0;
+                    for (int methodIndex = 0; methodIndex < classMethods1.size(); methodIndex++) {
+                        String methodId = classMethods1.get(methodIndex);
+                        if (methodId.startsWith(currentId) || methodId.startsWith(currentId2)) {
+                            classMethodsCount1++;
                         }
+                    }
 
-                        // MISMO NUMERO DE LINEAS
-                        if (lines == linesPr2) {
-                            localPoints += 0.4;
+                    int classMethodsCount2 = 0;
+                    for (int methodIndex = 0; methodIndex < classMethods2.size(); methodIndex++) {
+                        String methodId = classMethods2.get(methodIndex);
+                        if (methodId.startsWith(currentId) || methodId.startsWith(currentId2)) {
+                            classMethodsCount2++;
                         }
+                    }
 
-                        // AGREGAR PUNTOS DE CLASE REPETIDA
+                    // MISMA CANTIDAD DE METODOS
+                    if (classMethodsCount1 == classMethodsCount2) {
+                        localPoints += 0.4;
+                    }
+
+                    // MISMO NUMERO DE LINEAS
+                    if (lines == linesPr2) {
+                        localPoints += 0.4;
+                    }
+
+                    // AGREGAR PUNTOS DE CLASE REPETIDA
+                    if (localPoints > 0) {
                         Element classElement = new Element("class", currentId, localPoints);
+                        Element classElement2 = new Element("class", currentId2, localPoints);
                         classPoints.put(currentId, classElement);
+                        classPoints.put(currentId2, classElement2);
                     }
                 }
             }
@@ -293,11 +313,12 @@ public class Compare {
 
                 for (int cI2 = 0; cI2 < methodList2.size(); cI2++) {
                     // LINEAS Y PARAMETROS
+                    String currentId2 = methodList2.get(cI2);
                     int lines2 = Integer.parseInt(methodLines2.get(cI2));
                     int params2 = Integer.parseInt(methodParams2.get(cI2));
                     double localPoints = 0;
 
-                    if (currentId.equals(methodList2.get(cI2))) {
+                    if (currentId.equals(currentId2)) {
                         localPoints += 0.4;
 
                         // MISMOS PARAMETROS
@@ -327,7 +348,9 @@ public class Compare {
                     // AGREGAR PUNTOS DE METODO
                     if (localPoints > 0) {
                         Element methodElement = new Element("method", currentId, localPoints);
+                        Element methodElement2 = new Element("method", currentId2, localPoints);
                         methodPoints.put(currentId, methodElement);
+                        methodPoints.put(currentId2, methodElement2);
                     }
                 }
             }
@@ -348,10 +371,14 @@ public class Compare {
                 String currentId = varList1.get(cI);
 
                 for (int cI2 = 0; cI2 < varList2.size(); cI2++) {
+                    String currentId2 = varList2.get(cI2);
+
                     // MISMO NOMBRE
-                    if (currentId.equals(varList2.get(cI2))) {
+                    if (currentId.equals(currentId2)) {
                         Element varElement = new Element("var", currentId, 1);
+                        Element varElement2 = new Element("var", currentId2, 1);
                         varPoints.put(currentId, varElement);
+                        varPoints.put(currentId2, varElement2);
                     }
                 }
             }
@@ -372,10 +399,14 @@ public class Compare {
                 String currentId = commentList1.get(cI);
 
                 for (int cI2 = 0; cI2 < commentList2.size(); cI2++) {
+                    String currentId2 = commentList2.get(cI2);
+
                     // MISMO NOMBRE
-                    if (currentId.equals(commentList2.get(cI2))) {
+                    if (currentId.equals(currentId2)) {
                         Element commentElement = new Element("comment", currentId, 1);
+                        Element commentElement2 = new Element("comment", currentId2, 1);
                         commentPoints.put(currentId, commentElement);
+                        commentPoints.put(currentId2, commentElement2);
                     }
                 }
             }

@@ -16,15 +16,15 @@ import java.util.stream.Stream;
 public class AnalyticsReport {
 
     private ArrayList<ElementCounter> elements;
-    private String proyect1, proyect2;
+    private String project1, project2;
 
     /**
      * Constructor
      */
-    public AnalyticsReport(ArrayList<ElementCounter> elements, String proyect1, String proyect2) {
+    public AnalyticsReport(ArrayList<ElementCounter> elements, String project1, String project2) {
         this.elements = elements;
-        this.proyect1 = proyect1;
-        this.proyect2 = proyect2;
+        this.project1 = project1;
+        this.project2 = project2;
     }
 
     /**
@@ -32,16 +32,10 @@ public class AnalyticsReport {
      *
      * @return
      */
-    public String getTokenTable() {
+    public String getAnalyticsTable() {
         String content = "";
 
-        int pr1Vars = 0,
-                pr1Methods = 0,
-                pr1Classes = 0,
-                pr1Comments = 0,
-                pr2Vars = 0,
-                pr2Methods = 0,
-                pr2Classes = 0,
+        int pr1Vars = 0, pr1Methods = 0, pr1Classes = 0, pr1Comments = 0, pr2Vars = 0, pr2Methods = 0, pr2Classes = 0,
                 pr2Comments = 0;
 
         for (int elementIndex = 0; elementIndex < elements.size(); elementIndex++) {
@@ -49,45 +43,47 @@ public class AnalyticsReport {
             int counter = element.counter;
 
             // VERIFICAR NOMBRE DE ARCHIVO
-            if (element.proyectName.equals(proyect1)) {
+            if (element.proyectName.equals(project1)) {
                 if (element.key.equals("var")) {
-                    pr1Vars = counter;
+                    pr1Vars += counter;
                 }
                 if (element.key.equals("method")) {
-                    pr1Methods = counter;
+                    pr1Methods += counter;
                 }
                 if (element.key.equals("class")) {
-                    pr1Classes = counter;
+                    pr1Classes += counter;
                 }
                 if (element.key.equals("comment")) {
-                    pr1Comments = counter;
+                    pr1Comments += counter;
                 }
 
             }
 
             // ARCHIVO EN PROYECTO 2
-            if (element.proyectName.equals(proyect2)) {
+            if (element.proyectName.equals(project2)) {
                 if (element.key.equals("var")) {
-                    pr2Vars = counter;
+                    pr2Vars += counter;
                 }
                 if (element.key.equals("method")) {
-                    pr2Methods = counter;
+                    pr2Methods += counter;
                 }
                 if (element.key.equals("class")) {
-                    pr2Classes = counter;
+                    pr2Classes += counter;
                 }
                 if (element.key.equals("comment")) {
-                    pr2Comments = counter;
+                    pr2Comments += counter;
                 }
 
             }
         }
 
         // CREAR STRING
-        content += "<tr><td>Total Variables</td><td>" + Integer.toString(pr1Vars) + "</td><td>" + Integer.toString(pr2Vars) + "</td></tr>"
-                + "<tr><td>Total Clases</td><td>" + Integer.toString(pr1Classes) + "</td><td>" + Integer.toString(pr2Classes) + "</td></tr>"
-                + "<tr><td>Total Metodos</td><td>" + Integer.toString(pr1Methods) + "</td><td>" + Integer.toString(pr2Methods) + "</td></tr>"
-                + "<tr><td>Total Comentarios</td><td>" + Integer.toString(pr1Comments) + "</td><td>" + Integer.toString(pr2Comments) + "</td></tr>";
+        content += "<tr><td>Total Variables</td><td>" + Integer.toString(pr1Vars) + "</td><td>"
+                + Integer.toString(pr2Vars) + "</td></tr>" + "<tr><td>Total Clases</td><td>"
+                + Integer.toString(pr1Classes) + "</td><td>" + Integer.toString(pr2Classes) + "</td></tr>"
+                + "<tr><td>Total Métodos</td><td>" + Integer.toString(pr1Methods) + "</td><td>"
+                + Integer.toString(pr2Methods) + "</td></tr>" + "<tr><td>Total Comentarios</td><td>"
+                + Integer.toString(pr1Comments) + "</td><td>" + Integer.toString(pr2Comments) + "</td></tr>";
 
         // RECORRER
         return content;
@@ -102,15 +98,13 @@ public class AnalyticsReport {
     public ArrayList<String> getPaths(String path) {
         ArrayList<String> list = new ArrayList<String>();
 
-        // PROJECTO 1
+        // PROYECTO 1
         try (Stream<Path> paths = Files.walk(Paths.get(path))) {
             // FILTRAR
-            paths
-                    .filter(Files::isRegularFile)
-                    .forEach(file -> {
-                        // AGREGAR
-                        list.add(file.getFileName().toString());
-                    });
+            paths.filter(Files::isRegularFile).forEach(file -> {
+                // AGREGAR
+                list.add(file.getFileName().toString());
+            });
         } catch (IOException ex) {
             System.out.println(ex);
         }
@@ -133,7 +127,7 @@ public class AnalyticsReport {
             FileWriter writer = new FileWriter("report/analytics/index.html");
             String contentWithTable = content.replace(oldString, newString);
 
-            // GRAFICAS
+            // GRÁFICAS
             String barCharts = "", lineCharts = "", pieCharts = "";
             ArrayList<String> assetPaths = getPaths("report/assets");
             for (int pathIndex = 0; pathIndex < assetPaths.size(); pathIndex++) {
@@ -152,8 +146,7 @@ public class AnalyticsReport {
                 }
             }
 
-            contentWithTable = contentWithTable.replace("{line_charts}", lineCharts)
-                    .replace("{bar_charts}", barCharts)
+            contentWithTable = contentWithTable.replace("{line_charts}", lineCharts).replace("{bar_charts}", barCharts)
                     .replace("{pie_chart}", pieCharts);
             writer.write(contentWithTable);
             writer.close();
@@ -166,6 +159,6 @@ public class AnalyticsReport {
      * Seleccionar template
      */
     public void generateReport() {
-        modifyFile("report/analytics/template.html", "{table_content}", getTokenTable());
+        modifyFile("report/analytics/template.html", "{table_content}", getAnalyticsTable());
     }
 }

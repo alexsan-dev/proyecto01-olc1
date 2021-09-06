@@ -1,7 +1,9 @@
 package com.alexsantos.proyecto01.controllers;
 
+import com.alexsantos.proyecto01.analyzer.errors.ErrorHandler;
 import com.alexsantos.proyecto01.analyzer.fca.FCAParser;
 import com.alexsantos.proyecto01.analyzer.fca.FCAScanner;
+import com.alexsantos.proyecto01.analyzer.tokens.TokensHandler;
 import com.alexsantos.proyecto01.fca.Reports;
 import com.jfoenix.controls.JFXTabPane;
 import java.io.*;
@@ -62,7 +64,7 @@ public class Primary {
     }
 
     /**
-     * Obtener contendor actual
+     * Obtener contenedor actual
      *
      * @return
      */
@@ -95,9 +97,10 @@ public class Primary {
             public void write(int b) throws IOException {
                 // TEXTO
                 Text line = new Text("" + (char) (b & 0xFF));
-                line.setStyle("-fx-font-smoothing-type: lcd;-fx-fill:" + (isErr ? "#F44336;-fx-font-weight:bold;" : "#fff;") + "-fx-font-family: Fira Code;");
+                line.setStyle("-fx-font-smoothing-type: lcd;-fx-fill:"
+                        + (isErr ? "#F44336;-fx-font-weight:bold;" : "#fff;") + "-fx-font-family: Fira Code;");
 
-                // AGREGAR CARACTER
+                // AGREGAR CARÁCTER
                 output.getChildren().add(line);
             }
         });
@@ -124,7 +127,7 @@ public class Primary {
     }
 
     /**
-     * Mostrar mensaje de confirmacion
+     * Mostrar mensaje de confirmación
      *
      * @param title
      * @param content
@@ -197,7 +200,7 @@ public class Primary {
             writer = new BufferedWriter(new FileWriter(path));
             writer.write(editor.getText());
 
-            // BORRAR SIMBOLO DE GUARDADO
+            // BORRAR SÍMBOLO DE GUARDADO
             currentTab.setText(currentTab.getText().replace(" " + dotSymbol, ""));
         } catch (IOException ex) {
             System.out.println(ex);
@@ -241,7 +244,7 @@ public class Primary {
     private void saveFile() {
         String path = getCurrentTab().getId();
 
-        // ES UN EDITOR VACIO
+        // ES UN EDITOR VACIÓ
         if (path == null) {
             saveFileAs();
         } else {
@@ -303,7 +306,7 @@ public class Primary {
 
     @FXML
     /**
-     * Generar estadistico
+     * Generar estadístico
      */
     private void genAnalytics() {
         Reports reports = Reports.getInstance();
@@ -321,7 +324,8 @@ public class Primary {
 
             // PREGUNTAR PRIMERO ANTES DE CERRAR
             if (currentTab.getText().charAt(currentTab.getText().length() - 1) == dotSymbol) {
-                ButtonType confirm = showDialog("Guardar archivo", "No se han guardado los cambios de esta pestaña,\nes posible que todos los cambios podrian perderse.");
+                ButtonType confirm = showDialog("Guardar archivo",
+                        "No se han guardado los cambios de esta pestaña,\nes posible que todos los cambios podrían perderse.");
 
                 // GUARDAR ARCHIVO
                 if (confirm == ButtonType.OK) {
@@ -372,7 +376,7 @@ public class Primary {
         textArea.setPrefHeight(245.0);
         textArea.setPrefWidth(565.0);
         textArea.setLayoutX(42);
-        textArea.setPromptText("Escribe tu codigo aqui.");
+        textArea.setPromptText("Escribe tu código aquí.");
         textArea.setStyle("-fx-text-fill: #fff;");
         textArea.setFont(Font.font("Fira Code SemiBold", 13));
         textArea.setId("");
@@ -380,8 +384,7 @@ public class Primary {
         // EVENTOS DEL EDITOR
         textArea.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observable,
-                    String oldValue, String newValue) {
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 
                 // OBTENER NUMERO DE LINEAS
                 int lines = newValue.split("\n").length;
@@ -395,7 +398,7 @@ public class Primary {
                 linesArea.setText(newLines);
                 linesArea.scrollTopProperty().setValue(caretPosition);
 
-                // AGREGAR SIMBOLO DE GUARDADO
+                // AGREGAR SÍMBOLO DE GUARDADO
                 if (!newTab.getText().isEmpty()) {
                     if (newTab.getText().charAt(newTab.getText().length() - 1) != dotSymbol) {
                         newTab.setText(newTab.getText() + " " + dotSymbol);
@@ -462,16 +465,28 @@ public class Primary {
             // ANALIZAR
             parser.parse();
 
-            // COMPARAR
-            reports.compare();
+            // LIMPIAR ERRORES
+            TokensHandler tokens = TokensHandler.getInstance();
+            tokens.cleanProps();
+            ErrorHandler errs = ErrorHandler.getInstance();
+            errs.cleanProps();
             clearOutput(false);
 
-            // ANALIZAR OTRA VEZ Y GRAFICAR
-            FCAParser parser2 = new FCAParser(new FCAScanner(new StringReader(editor.getText())));
+            // COMPARAR
+            reports.compare();
+
+            // ANALIZAR OTRA VEZ Y GRÁFICAS
+            FCAScanner scanner = new FCAScanner(new StringReader(editor.getText()));
+            scanner.setFilePath(currentTab.getText());
+
+            FCAParser parser2 = new FCAParser(scanner);
             parser2.setFilePath(currentTab.getText());
             parser2.parse();
 
             reports.generateGraphs();
+            ButtonType confirm = showDialog("Fin de análisis",
+                    "Los errores fueron ignorados en el proceso y\nlas gráficas generadas se encuentran en reports.");
+
         } catch (Exception ex) {
             System.out.println(ex);
             ex.printStackTrace();

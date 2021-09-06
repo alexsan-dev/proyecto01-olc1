@@ -27,7 +27,7 @@ public class Graph {
     }
 
     /**
-     * Asignar propiedad de grafica
+     * Asignar propiedad de gráfica
      *
      * @param prop
      */
@@ -38,29 +38,29 @@ public class Graph {
 
             // ASIGNAR
             switch (key) {
-                case "title":
-                    if (title.isEmpty()) {
-                        title = (String) prop[0];
-                    } else {
-                        System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el titulo.\n");
-                    }
-                    break;
-                case "xaxis":
-                    if (xaxis.isEmpty()) {
-                        xaxis = (ArrayList<String>) prop[0];
-                    } else {
-                        System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el eje X.\n");
-                    }
-                    break;
-                case "values":
-                    if (values.isEmpty()) {
-                        values = (ArrayList<Double>) prop[0];
-                    } else {
-                        System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez los valores.\n");
-                    }
-                    break;
-                default:
-                    break;
+            case "title":
+                if (title.isEmpty()) {
+                    title = (String) prop[0];
+                } else {
+                    System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el titulo.\n");
+                }
+                break;
+            case "xaxis":
+                if (xaxis.isEmpty()) {
+                    xaxis = (ArrayList<String>) prop[0];
+                } else {
+                    System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez el eje X.\n");
+                }
+                break;
+            case "values":
+                if (values.isEmpty()) {
+                    values = (ArrayList<Double>) prop[0];
+                } else {
+                    System.err.println("\nError en linea " + prop[2] + " ya se asigno una vez los valores.\n");
+                }
+                break;
+            default:
+                break;
             }
         } else {
             System.err.println("\nError valor nulo en linea " + prop[2] + "\n");

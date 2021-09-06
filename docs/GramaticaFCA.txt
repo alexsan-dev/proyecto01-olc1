@@ -1,0 +1,80 @@
+START ::= MAIN
+
+STRINGLIST ::= STRINGLIST , strtext
+| STRINGLIST , id
+| strtext
+| id:text
+
+DOUBLELIST ::= DOUBLELIST , decimal 
+| DOUBLELIST , id
+| DOUBLELIST , GENPOINTS 
+| DOUBLELIST , FILEPOINTS 
+| decimal
+| id 
+| GENPOINTS 
+| FILEPOINTS
+
+MAIN ::= main { FUNCTIONS } 
+
+FUNCTIONS ::= FUNCTION FUNCTIONS | FUNCTION
+| SETGLOBALS | SETGLOBALS FUNCTIONS;
+
+FUNCTION ::= BARGRAPH | PIEGRAPH | LINEGRAPH | COMPARE
+| error { | error }
+
+COMPARE ::= compare openparenthesis strtext , strtext
+closeparenthesis ;
+
+SETGLOBALS ::= setglobals { DECLARATIONS }
+
+DECLARATIONS ::= DECLARATIONS DECLARATION ;
+| DECLARATION ; 
+
+DECLARATION ::= strtype id = strtext 
+| doubletype id = decimal
+| doubletype id = GENPOINTS
+| doubletype id = FILEPOINTS
+
+GENPOINTS ::= $ { genPoints } 
+
+FILEPOINTS ::= $ { filePoints , strtext , strtext , strtext }
+
+GRAPHPROP ::= GRAPHTITLE
+| GRAPHXAXIS
+| GRAPHVALUES
+
+GRAPHTITLE ::= title : strtext
+| title : id
+
+GRAPHXAXIS ::= xaxis : opensquarebracket
+STRINGLIST closesquarebracket
+
+GRAPHVALUES ::= values : opensquarebracket
+DOUBLELIST closesquarebracket
+
+LINEGRAPH ::= linegraph { LINEGRAPHPROPS }
+
+LINEGRAPHPROPS ::= LINEGRAPHPROPS LINEGRAPHPROP ; 
+| LINEGRAPHPROP ; 
+
+LINEGRAPHPROP ::= GRAPHTITLE | LINEGRAPHFILE
+
+LINEGRAPHFILE ::= file : strtext
+| file : id
+
+PIEGRAPH ::= piegraph { PIEGRAPHPROPS }
+
+PIEGRAPHPROPS ::= PIEGRAPHPROPS GRAPHPROP ;
+| GRAPHPROP ;
+
+BARGRAPH ::= bargraph { BARGRAPHPROPS }
+
+BARGRAPHPROPS ::= BARGRAPHPROPS BARGRAPHPROP ;
+| BARGRAPHPROP ; 
+
+BARGRAPHPROP ::= GRAPHPROP| BARGRAPHPTITLEX | BARGRAPHPTITLEY
+
+BARGRAPHPTITLEX ::= bgtitlex : strtext | bgtitlex : id
+
+BARGRAPHPTITLEY ::= bgtitley : strtext 
+| bgtitley : id

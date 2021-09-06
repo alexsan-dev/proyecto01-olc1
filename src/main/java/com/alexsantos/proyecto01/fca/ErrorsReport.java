@@ -27,13 +27,13 @@ public class ErrorsReport {
      *
      * @return
      */
-    public String getTokenTable() {
+    public String getErrTable() {
         String content = "";
 
         // RECORRER
         for (int errIndex = 0; errIndex < errs.symbols.size(); errIndex++) {
             ErrorSymbol err = errs.symbols.get(errIndex);
-            content += "<tr><td>" + (String) err.lex + "</td><td>No reconocido</td><td>" + Integer.toString(err.line) + "</td><td>" + Integer.toString(err.col) + "</td><td>" + err.file + "</td></tr>";
+            content += "<tr><td>" + (String) err.lex + "</td><td>" + err.msg + "</td><td>" + Integer.toString(err.line) + "</td><td>" + Integer.toString(err.col) + "</td><td>" + err.file + "</td></tr>";
         }
 
         return content;
@@ -63,6 +63,6 @@ public class ErrorsReport {
      * Seleccionar template
      */
     public void generateReport() {
-        modifyFile("report/errors/template.html", "{table_content}", getTokenTable());
+        modifyFile("report/errors/template.html", "{table_content}", getErrTable());
     }
 }

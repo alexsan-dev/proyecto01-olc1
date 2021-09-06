@@ -1,18 +1,11 @@
 package com.alexsantos.proyecto01;
 
-/*
-import com.alexsantos.proyecto01.analyzer.javascript.JSParser;
-import com.alexsantos.proyecto01.analyzer.javascript.JSScanner;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
- */
-import java.io.IOException;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.fxml.FXMLLoader;
+import java.io.IOException;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -24,19 +17,21 @@ public class App extends Application {
 
     @Override
     /**
-     * Iniciar vista inicial
+     * Inicia la aplicación FXML
+     * 
+     * @param stage
      */
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 1000, 400);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
-        stage.setTitle("FIUSAC Copy Analiyzer");
+        stage.setTitle("FIUSAC Copy Analyzer");
         stage.getIcons().add(new Image(App.class.getResourceAsStream("assets/icon.png")));
     }
 
     /**
-     * Cambiar vistas
+     * Cambiar archivo FXML
      *
      * @param fxml
      * @throws IOException
@@ -64,15 +59,5 @@ public class App extends Application {
      */
     public static void main(String[] args) {
         launch();
-        // ANALYZADOR
-        /* try {
-            File file = new File("/home/alex/Documentos/USAC/Compi1/proyecto01/proyecto01/src/test/fca/projects/project2/file_2.js");
-            JSParser parser = new JSParser(new JSScanner(new BufferedReader(new FileReader(file))));
-            parser.setFilePath("");
-            parser.parse();
-        } catch (Exception ex) {
-            System.err.println("Error en javascript ");
-            ex.printStackTrace();
-        }*/
     }
 }
